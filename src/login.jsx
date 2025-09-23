@@ -4,19 +4,27 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function signup(){
 
-const[name , setName]=useState()
+
+
+function Login (){
+    
 const[email , setEmail]=useState()
 const[password , setPassword]=useState()
-const navigate = useNavigate()
-
+const navigate =useNavigate()
 
 const handleSubmit=(e)=>{
     e.preventDefault()
-    axios.post('http://localhost:3001/register',{name,email,password})
-    .then(result=>{console.log(result)
-      navigate('/login')
+
+
+    axios.post('http://localhost:3001/login',{email,password})
+    .then(result=> {
+       console.log(result)
+            if(result.data ==="success"){
+
+                navigate('/home')
+            }
+     
  } )
     .catch(err=> console.log(err))
 
@@ -26,28 +34,14 @@ const handleSubmit=(e)=>{
     return(
 <div className='d-flex justify-content-center align-items-center bg-secondary '>
 <div className="bg-white p-3 rounded ">
-  <h2>Register</h2> 
-  <form onSubmit={handleSubmit}>
-    <div className="mb-3">
-        <label htmlFor="email">
-            <strong>Name</strong>
-        </label>
-    <input type="text" 
-        placeholder="enter name"
-        autoComplete="off"
-        name="email"
-        className="form-control rounded"
-        onChange={(e)=>setName(e.target.value)}
-
-        /> 
-    </div>
-
+  <h2>Login</h2> 
+ <form>
     <div className="mb-3">
         <label htmlFor=" Enter email">
             <strong>Email</strong>
         </label>
     <input type="text" 
-        placeholder="enter email"
+        placeholder="entername"
         autoComplete="off"
         name="email"
         className="form-control rounded"
@@ -65,19 +59,14 @@ const handleSubmit=(e)=>{
         name="password"
         className="form-control rounded"
         onChange={(e)=>setPassword(e.target.value)}
-
+           
         /> 
     </div>
 <button  type="submit" className="btn btn-success w-100 rounded-0">
-    Register
+    Login
     
     </button>
     </form> 
-    <p>Already have an account</p>
-    <Link to="/login" className="btn btn-default border w-100 bg-light rounded-0 text-decoration-none">
-     Login
-    </Link>
-
 
    
 </div>
@@ -85,4 +74,7 @@ const handleSubmit=(e)=>{
   
 );
 }
-export default signup;
+
+
+
+export default Login;
