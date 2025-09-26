@@ -1,0 +1,130 @@
+
+
+/* login page */
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.login_title{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10;
+}
+
+.login_icon{
+    margin-right: 10;
+    color: aqua;
+}
+.login_form{
+    display: flex;
+    justify-content: center;
+
+}
+.login_form input{
+    margin: 10;
+    height: 38px;
+    width: 35%;
+    border-radius: 10px;
+    border-color: rgb(9, 61, 61);
+    background-color: #fff;
+    font-size: 15;
+    padding-inline: 10px;
+    margin: 20px;
+}
+.login_form button{
+    width: 10%;
+    height:38px ;
+    font-weight: bold;
+    border-radius: 10px;
+    font-size: 18;
+    background-color: rgb(25, 173, 173);
+    border-width: 0;
+    color: aliceblue;
+    margin: 20px;
+
+}
+
+/*  chat container page */
+.chat_container{
+    background-color: antiquewhite; 
+    max-height: 100%;
+    padding: 20px;
+
+}
+.chats_header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+/* chatlist */
+.chats_list{
+    height: 75vh;
+    overflow: scroll;
+     overflow-x:hidden ; 
+}
+.chat_sender{
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: row;
+
+}
+.chat_sender img,
+.chat_receiver img{
+    width: 50px;
+    height: 50px;
+    border-radius: 100px;
+
+}
+
+.chat_sender p{
+    padding: 10px;
+    background-color: rgb(93, 156, 211);
+    border-radius: 10px;
+    max-width:  60%;
+}
+
+.chat_receiver{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;
+}
+.chat_receiver p{
+    padding: 10px;
+    background-color: rgb(22, 153, 81);
+    border-radius: 10px;
+    max-width: 60%;
+}
+
+/* chatinput-textarea */
+
+.inputtext_container{
+    display: flex;
+    justify-content:space-evenly;
+    align-items:last baseline;
+
+
+}
+.inputtext_container button{
+    width: 50px;
+    height: 30px;
+    font-weight:bolde;
+    border-radius: 10px;
+    font-size: 18px;
+    background-color: rgb(16, 171, 199);
+    border-width: 0;
+    color: #fff;
+
+}
+.inputtext_container textarea{
+    width: 500px;
+    height: 40px;
+    border-radius: 10px;
+    border-width: 0;
+    padding: 10px;
+    font-size: 18px;
+    background-color: #fff;
+}

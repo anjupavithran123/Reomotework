@@ -22,7 +22,7 @@ const handleSubmit=(e)=>{
        console.log(result)
             if(result.data ==="success"){
 
-                navigate('/home')
+                navigate('/home');
             }
      
  } )
@@ -32,8 +32,8 @@ const handleSubmit=(e)=>{
 
 
     return(
-<div className='d-flex justify-content-center align-items-center bg-secondary '>
-<div className="bg-white p-3 rounded ">
+<div className='d-flex justify-content-center align-items-center  w-100 '>
+<div className=" p-3 rounded w-25 ">
   <h2>Login</h2> 
  <form>
     <div className="mb-3">

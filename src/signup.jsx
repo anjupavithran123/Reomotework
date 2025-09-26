@@ -24,8 +24,8 @@ const handleSubmit=(e)=>{
 
 
     return(
-<div className='d-flex justify-content-center align-items-center bg-secondary '>
-<div className="bg-white p-3 rounded ">
+<div className='d-flex justify-content-center align-items-center  w-100'>
+<div className=" p-3 rounded w-25">
   <h2>Register</h2> 
   <form onSubmit={handleSubmit}>
     <div className="mb-3">

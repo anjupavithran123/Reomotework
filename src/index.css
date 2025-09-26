@@ -1,70 +1,133 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
 
 @import "tailwindcss";
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+*{
+  padding: 0;
+  margin:0;
+  box-sizing:border-box;
 }
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
+body{
+  background: url("./assets/cool-plain-blue-abstract-background-hd-wallpaper-design-free-vector.jpg");
   min-height: 100vh;
+  position: relative;
+  font-family:'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif ;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+body ::before{
+  position: absolute;
+  content: "";
+  width: 100% 1;
+  height: 100%;
+  background :rgba(1, 6, 7, 0.288);
+  z-index: -1;
+}
+a{
+  text-decoration: none;
+}
+header{
+  
+ 
+  box-shadow:rgb(32, 31, 31) ;
+  padding: 2rem 0;
+
+}
+.container{
+  max-width:1400px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+.container nav{
+  display: flex;
+  justify-content: space-between;
+
+  align-items: center;
+ 
+}
+
+.container nav .logo{
+  color: black;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
+.container .nav-link{
+  display:flex;
+  
+}
+.container .nav-link li{
+  list-style: none;
+  margin: 0 0.5rem;
+  
+
+}
+
+.container ul li a{
+  color: black;
+  font-size: 1.3rem;
+  padding: 0.7rem 1rem;
+  display: block;
+  border-radius: 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  
+  
+
+}
+.container ul li a:hover,
+.container ul li a.active{
+  background-color: rgb(211, 217, 223);
+
+  
+}
+
+
+.content{
+  position: absolute;
+  top:45%;
+  left: 50%;
+  transform: translate(-50%,0%);
+
+
+}
+.content h2{
+  font-size: 6rem;
+  color: rgb(53, 121, 180);
+}
+
+.icon{
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: none;
+}
+@media(max-width:768px){
+  .content h2{
+    font-size: 4rem;
+    text-align: center;
+    
   }
-  a:hover {
-    color: #747bff;
+  .icon{
+    display:flex;
   }
-  button {
-    background-color: #f9f9f9;
+  .container .nav-link{
+    flex-direction: column;
+    justify-content: space-evenly;
+    background-color: rgba(224, 236, 236, 0.993);
+    position: absolute;
+    width: 350px;
+    height: 60vh;
+    top: 80px;
+    right: 0;
+    z-index: 10;
+    transition: all 0.7s ease-in;
+
   }
+  .nav-link.active{
+    top: 10%;
+    transition: all 0.7s ease-in;
+  }
+
 }
