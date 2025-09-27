@@ -4,7 +4,7 @@ import React,{useState} from 'react';
 const Chatinput = (addMessage) => {
   const[message,setMessage]=useState()
   const sendMessage=()=>{
-     addMessage(message)
+     addMessage({message})
     setMessage("")
   }
   return (

@@ -47,12 +47,10 @@ const Logout=()=>{
                <h4>
                 username:{user}
                </h4>
-              <p>
-               
-                <p className='chat_logout' onClick={Logout}> </p>
-                 <strong>Logout</strong>
-                
-              </p>
+               <div onClick={Logout} style={{cursor: 'pointer'}}> {/* Apply the click handler to the container */}
+              <div className='chat_logout'></div> {/* Used for styling/icon */}
+              <strong>Logout</strong>
+</div>
             </div>
             <Chatlist chats={chats}/>
             <Chatinput addMessage={addMessage}/>

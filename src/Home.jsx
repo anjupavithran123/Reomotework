@@ -28,7 +28,7 @@ function Home(){
                 </li>
 
                 <li>
-                    <a href="/taskboard">TaskBoard</a>
+                    <a href="/doc">Docs Editor</a>
                 </li>
 
               </ul>

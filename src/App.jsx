@@ -7,6 +7,7 @@ import Login from './login.jsx'
 import Home from './Home.jsx'
 import Chatlogin from './chatlogin.jsx'
 import Chatcontainer from './chatcontainer.jsx'
+import Doc from './doc.jsx'
 
 
 function App() {
@@ -23,6 +24,8 @@ function App() {
     <Route path='/home' element={<Home/>}></Route>
     <Route path='/chatbox' element={<Chatlogin/>}></Route>
     <Route path='/chatcontainer' element={<Chatcontainer/>}></Route>
+    <Route path='/doc' element={<Doc/>}></Route>
+
 
 
 

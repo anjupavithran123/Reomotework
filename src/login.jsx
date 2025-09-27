@@ -35,7 +35,7 @@ const handleSubmit=(e)=>{
 <div className='d-flex justify-content-center align-items-center  w-100 '>
 <div className=" p-3 rounded w-25 ">
   <h2>Login</h2> 
- <form>
+  <form>
     <div className="mb-3">
         <label htmlFor=" Enter email">
             <strong>Email</strong>
