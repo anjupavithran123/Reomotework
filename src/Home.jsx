@@ -30,6 +30,9 @@ function Home(){
                 <li>
                     <a href="/doc">Docs Editor</a>
                 </li>
+                <li>
+                    <a href="/todolist">Taskboard</a>
+                </li>
 
               </ul>
            <div className="icon"onClick={toggleMenu}>

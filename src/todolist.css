@@ -1,0 +1,27 @@
+.todo{
+    margin: auto;
+   width: 30%;
+ 
+  padding: 55px;
+  justify-content: space-evenly;
+   
+    
+}
+
+h1{
+    color: rgb(9, 9, 192);
+
+}
+button{
+    background-color: rgb(77, 77, 243);
+    width: 55px;
+    gap: 10px;
+    border-radius: 5px;
+    margin-left: 10px; 
+}
+input{
+    border-color: blueviolet;
+    background-color: rgb(192, 212, 212);
+    border-radius: 5px;
+    justify-content: space-around;
+}
