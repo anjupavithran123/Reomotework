@@ -9,7 +9,7 @@ import Chatlogin from './chatlogin.jsx'
 import Chatcontainer from './chatcontainer.jsx'
 import Doc from './doc.jsx'
 import TodoList from './TodoList.jsx'
-
+import FileUploader from './fileupload.jsx'
 
 function App() {
    return(
@@ -27,7 +27,7 @@ function App() {
     <Route path='/chatcontainer' element={<Chatcontainer/>}></Route>
     <Route path='/doc' element={<Doc/>}></Route>
     <Route path='/todolist' element={<TodoList/>}></Route>
-
+    <Route path='/fileupload' element={<FileUploader/>}></Route> 
 
 
     </Routes>

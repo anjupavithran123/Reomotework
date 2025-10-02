@@ -33,7 +33,9 @@ function Home(){
                 <li>
                     <a href="/todolist">Taskboard</a>
                 </li>
-
+                <li>
+                    <a href="/fileupload">Fileupload</a>
+                </li>
               </ul>
            <div className="icon"onClick={toggleMenu}>
            <FaBars />
