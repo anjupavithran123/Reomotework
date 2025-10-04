@@ -1,37 +1,32 @@
 import React, { useState } from 'react'
-import { FaReact } from 'react-icons/fa'
-import { useNavigate } from 'react-router-dom';
-import "./chatstyle.css"
-import { debounce } from 'lodash';
+import {FaReact} from 'react-icons/fa6'
+import './chatstyle.css'
 import _ from 'lodash'
+import { useNavigate } from 'react-router-dom';
 
- const chatlogin = ({setUser}) => {
-
-  const navigate = useNavigate();
-
-  const [userName,setUserName]=useState()
-    const handleUser=()=>{
-      if(!userName)return;
-      localStorage.setItem("user",userName)
-      setUser(userName)
-      localStorage.setItem("avatar","https://picsum.photos/id/${_.random(1,1000)}/200/300")
-      
-      navigate('/chatcontainer');
-      
+const UserLogin = ({setUser}) => {
+    const [userName, setUserName] = useState()
+    const navigate = useNavigate();
+    const handleUser = () => {
+        if(!userName) return;
+        localStorage.setItem('user', userName)
+        setUser(userName)
+        localStorage.setItem('avatar', `https://picsum.photos/id/${_.random(1,1000)}/200/300`)
+        navigate('/chatcontainer'); 
     }
   return (
-    <div className='chat_container'>
-    <div className='login_title'>
-        <FaReact/>
-        <h1>chatbox</h1>
-    </div>
-    <div className='login_form'>
-        <input type="text" placeholder='Enter name' 
-        onChange={(e)=>setUserName(e.target.value)}/>
-        <button onClick={handleUser}>Login</button>
-       
-    </div>
+    <div className='login_container'>
+        <div className='login_title'>
+            {/* <FaReact className='login_icon'/> */}
+            <h1>Chat App</h1>
+        </div>
+        <div className='login_form'>
+            <input type="text" placeholder='Enter a Unique Name'
+            onChange={(e) => setUserName(e.target.value)}/>
+            <button onClick={handleUser}>Login</button>
+        </div>
     </div>
   )
 }
-export default chatlogin;
+
+export default UserLogin

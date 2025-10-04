@@ -1,65 +1,64 @@
-import React, { useEffect, useState } from 'react'
-import Chatlist from "./chatlist"
-import Chatinput from './chatinput';
-import Chatlogin from './chatlogin'
-import socketIOClient from'socket.io-client'
-const chatcontainer = () => {
+import React, { useEffect, useRef, useState } from "react";
+import { FaYoutube } from "react-icons/fa6";
+import ChatLists from "./chatlist";
+import InputText from "./chatinput"
+import UserLogin from "./chatlogin";
+import socketIOClient from "socket.io-client";
 
-  const [user,setUser]=useState(localStorage.getItem('user'))
-   const socketio=socketIOClient('http://localhost:3001')
-   const [chats,setChats]=useState([])
+const ChatContainer = () => {
+  const [user, setUser] = useState(localStorage.getItem("user"));
+  const socketio = socketIOClient("http://localhost:3002");
+  const [chats, setChats] = useState([]);
 
+  useEffect(() => {
+    socketio.on("chat", (chats) => {
+      setChats(chats);
+    });
 
- useEffect(()=>{
-  socketio.on('chat',(senderChats)=>{
-    setChats(chats)
+    socketio.on('message', (msg) => {
+      setChats((prevChats) => [...prevChats, msg])
+    })
 
-  } )
- })
-
- const sendToSocket=(chat)=>{
-  socketio.emit('chat',chat)
- }
-  const addMessage=(chat)=> {
-    const newChat = {
-      ...chat,
-      user: localStorage.getItem('user'),
-      avatar: localStorage.getItem('avatar')
-    };
-
-
- setChats([...chat,newChat])
- sendToSocket([...chat,newChat])
-}
-
-const Logout=()=>{
-  localStorage.removeItem("user")
-  localStorage.removeItem("avatar")
-  setUser('')
-
-}
-   return (
-    <div className='chat_container'>
-
-      {  user?(
-        <div>
-            <div className='chats_header'>
-               <h4>
-                username:{user}
-               </h4>
-               <div onClick={Logout} style={{cursor: 'pointer'}}> {/* Apply the click handler to the container */}
-              <div className='chat_logout'></div> {/* Used for styling/icon */}
-              <strong>Logout</strong>
-</div>
-            </div>
-            <Chatlist chats={chats}/>
-            <Chatinput addMessage={addMessage}/>
-        </div>
-      ):
-      <Chatlogin setUser={setUser}/>
+    return () => {
+      socketio.off('chat')
+      socketio.off('message')
     }
-    </div>
-  )
-}
+  }, []);
 
-export default chatcontainer;
+  const addMessage = (chat) => {
+    const newChat = {
+      username: localStorage.getItem("user"),
+      message: chat,
+      avatar: localStorage.getItem("avatar"),
+    };
+    socketio.emit('newMessage', newChat)
+  };
+
+  const Logout = () => {
+    localStorage.removeItem("user")
+    localStorage.removeItem('avatar')
+    setUser('')
+  }
+
+  return (
+    <div className="cont">
+      {user ? (
+        <div className="home">
+          <div className="chats_header">
+            <h4>Username: {user}</h4>
+           
+            <p className="chats_logout" onClick={Logout}>
+              <strong>Logout</strong>
+            </p>
+          </div>
+          <ChatLists chats={chats} />
+          <InputText addMessage={addMessage} />
+        </div>
+      ) : (
+        <UserLogin setUser={setUser} />
+      )}
+    </div>
+  );
+};
+
+export default ChatContainer;
