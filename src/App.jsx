@@ -11,6 +11,7 @@ import Doc from './doc.jsx'
 import TodoList from './TodoList.jsx'
 import FileUploader from './fileupload.jsx'
 import ProfilepicUpload from './profilepic.jsx'
+import CollaborativeWhiteboard from './whiteboard.jsx'
 
 function App() {
    return(
@@ -30,6 +31,7 @@ function App() {
     <Route path='/todolist' element={<TodoList/>}></Route>
     <Route path='/fileupload' element={<FileUploader/>}></Route> 
     <Route path='/profilepic' element={<ProfilepicUpload/>}></Route>
+    <Route path='/whiteboard' element={<CollaborativeWhiteboard/>}></Route>
 
 
     </Routes>
