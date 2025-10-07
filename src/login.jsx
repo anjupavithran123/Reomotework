@@ -1,80 +1,75 @@
-import React from "react";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+// Login.jsx
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
+export default function Login() {
+  const [email, setEmail] = useState("");           // <- initialize to empty string
+  const [password, setPassword] = useState("");     // <- initialize to empty string
+  const [errorMsg, setErrorMsg] = useState("");
+  const navigate = useNavigate();
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
 
+    // --- DEBUG: print values before sending
+    console.log("Submitting login:", { email, password });
 
-function Login (){
-    
-const[email , setEmail]=useState()
-const[password , setPassword]=useState()
-const navigate =useNavigate()
+    try {
+      const resp = await axios.post("http://localhost:3001/login", { email, password }, {
+        headers: { "Content-Type": "application/json" }
+      });
 
-const handleSubmit=(e)=>{
-    e.preventDefault()
+      // --- DEBUG: log whole response
+      console.log("Login response:", resp.status, resp.data);
 
+      // Accept success if server sends { success: true }
+      if (resp.status === 200 && resp.data && resp.data.success) {
+        // optional: persist user/session
+        // localStorage.setItem("user", JSON.stringify(resp.data.user))
+        navigate("/home");
+      } else {
+        // show server message or generic
+        setErrorMsg(resp.data?.message || "Login failed");
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      const msg = err.response?.data?.message || err.message || "Network or server error";
+      setErrorMsg(msg);
+    }
+  };
 
-    axios.post('http://localhost:3001/login',{email,password})
-    .then(result=> {
-       console.log(result)
-            if(result.data ==="success"){
+  return (
+    <div>
+      <h2>Login</h2>
+      <form onSubmit={handleSubmit} noValidate>
+        <div>
+          <label>Email</label><br />
+          <input
+            type="email"
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
 
-                navigate('/home');
-            }
-     
- } )
-    .catch(err=> console.log(err))
+        <div>
+          <label>Password</label><br />
+          <input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+        </div>
 
-}
+        <button type="submit">Login</button>
+      </form>
 
-
-    return(
-<div className='d-flex justify-content-center align-items-center  w-100 '>
-<div className=" p-3 rounded w-25 ">
-  <h2>Login</h2> 
-  <form>
-    <div className="mb-3">
-        <label htmlFor=" Enter email">
-            <strong>Email</strong>
-        </label>
-    <input type="text" 
-        placeholder="entername"
-        autoComplete="off"
-        name="email"
-        className="form-control rounded"
-        onChange={(e)=>setEmail(e.target.value)}
-        /> 
+      {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
     </div>
-
-
-    <div className="mb-3">
-        <label htmlFor="email">
-            <strong>password</strong>
-        </label>
-    <input type="password" 
-        placeholder="enter password"
-        name="password"
-        className="form-control rounded"
-        onChange={(e)=>setPassword(e.target.value)}
-           
-        /> 
-    </div>
-<button  type="submit" className="btn btn-success w-100 rounded-0">
-    Login
-    
-    </button>
-    </form> 
-
-   
-</div>
-</div>
-  
-);
+  );
 }
-
-
-
-export default Login;
