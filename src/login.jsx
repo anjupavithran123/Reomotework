@@ -2,6 +2,9 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 
 export default function Login() {
   const [email, setEmail] = useState("");           // <- initialize to empty string
@@ -41,7 +44,10 @@ export default function Login() {
   };
 
   return (
-    <div>
+
+    <div className="d-flex justify-content-center align-items-center  vh-100 ">
+
+    <div className="bg-white p-3 rounded w-25">
       <h2>Login</h2>
       <form onSubmit={handleSubmit} noValidate>
         <div>
@@ -63,13 +69,15 @@ export default function Login() {
             onChange={e => setPassword(e.target.value)}
             required
             autoComplete="current-password"
+            
           />
         </div>
-
-        <button type="submit">Login</button>
+<br />
+        <button type="submit" >Login</button>
       </form>
 
       {errorMsg && <p style={{ color: "red" }}>{errorMsg}</p>}
+    </div>
     </div>
   );
 }

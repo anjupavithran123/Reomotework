@@ -53,10 +53,10 @@ function Home(){
                 </li>
 
                 <li>
-                    <a href="/doc">Docs Editor</a>
+                    <a href="/document">Docs Editor</a>
                 </li>
                 <li>
-                    <a href="/todolist">Taskboard</a>
+                    <a href="/taskboard">Taskboard</a>
                 </li>
                 <li>
                     <a href="/fileupload">Fileupload</a>

@@ -1,0 +1,19 @@
+{
+  "name": "document-server",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "nodemon": "^3.1.10",
+    "quill-delta": "^5.1.0",
+    "socket.io": "^4.8.1"
+  }
+}

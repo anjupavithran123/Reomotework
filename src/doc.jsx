@@ -3,6 +3,11 @@ import Delta from "quill-delta";
 
 import { AddUser } from "./components/AddUser";
 import { User } from "./components/User";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+
+
 
 import "./doc.css";
 
@@ -21,13 +26,25 @@ function Document() {
       const newcontent = operations.reduce((acc, curr) => {
         return acc.compose(curr.delta);
       }, contentRef.current);
-
+  
       contentRef.current = newcontent;
       console.log("server updated...");
+  
+      // ✅ Show notification
+      toast.info("Document content has been updated!", {
+        position: "bottom-right",
+        autoClose: 3000, // close after 3s
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "colored",
+      });
+  
       setOperations([]);
     }
   }, [operations]);
-
+  
   // API mock
   const getInitialState = () => {
     return contentRef.current;
@@ -47,7 +64,7 @@ function Document() {
   return (
     <>
       <div className="container">
-        <h1 className="center">Document Editor </h1>
+        <h1 className="center">Document Editor</h1>
         <AddUser onCreateUser={onCreateUser} />
         <div className="users">
           {users.map((user) => (
@@ -60,10 +77,13 @@ function Document() {
             />
           ))}
         </div>
-        
       </div>
+  
+      {/* ✅ Toast container must be here */}
+      <ToastContainer />
     </>
   );
+  
 }
 
 export default Document;
