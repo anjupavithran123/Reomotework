@@ -1,117 +1,240 @@
-import React, { useEffect, useState, useRef } from 'react';
-import axios from 'axios';
-import { io } from 'socket.io-client';
+// Members.jsx
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import axios from "axios";
+import { io } from "socket.io-client";
 
-// Default SOCKET_URL picks from env or localhost if not provided
-const SOCKET_URL = import.meta.env.REACT_APP_SOCKET_URL || 'http://localhost:4000';
-
-// MembersAndPresence component
-// Props:
-// - currentUserId (string) - id of logged in user (required to register presence)
-// - usersApi (string) - endpoint to fetch registered users (defaults to /api/users)
-export default function MembersAndPresence({ currentUserId, usersApi = '/api/users' }) {
-  const [members, setMembers] = useState([]); // { id, name, avatar? }
-  const [online, setOnline] = useState(new Set()); // set of userIds
+export default function Members() {
+  const [members, setMembers] = useState([]);
+  const [onlineIds, setOnlineIds] = useState([]); // strings
+  const [loading, setLoading] = useState(true);
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const raw = typeof window !== "undefined" ? localStorage.getItem("user") : null;
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      const id = parsed?.id || parsed?._id || parsed?.user?.id || parsed?.user?._id;
+      return { id: id ? String(id) : null, name: parsed?.name || parsed?.user?.name || "", email: parsed?.email || parsed?.user?.email || "" };
+    } catch (e) {
+      console.error("parse error", e);
+      return null;
+    }
+  });
   const socketRef = useRef(null);
 
-  // fetch members once
+  // Listen for storage changes (login/out from other tabs)
   useEffect(() => {
-    let cancelled = false;
-    axios
-      .get(usersApi)
-      .then((res) => {
-        if (!cancelled) setMembers(res.data || []);
-      })
-      .catch((err) => {
-        console.error('Failed to fetch users', err);
-      });
-    return () => (cancelled = true);
-  }, [usersApi]);
-
-  // setup socket and presence listeners
-  useEffect(() => {
-    // create socket connection
-    const socket = io(SOCKET_URL, { transports: ['websocket'] });
-    socketRef.current = socket;
-
-    socket.on('connect', () => {
-      // register current user for presence tracking
-      if (currentUserId) socket.emit('register', currentUserId);
-    });
-
-    // initialize presence with a batch message (optional)
-    // server might emit initial online list; handle both single updates and initial lists
-    socket.on('presence-initial', (onlineList) => {
-      setOnline(new Set(onlineList || []));
-    });
-
-    socket.on('presence-update', ({ userId, status }) => {
-      setOnline((prev) => {
-        const next = new Set(prev);
-        if (status === 'online') next.add(userId);
-        else next.delete(userId);
-        return next;
-      });
-    });
-
-    // optional: server could send an array of currently online users when you connect
-    socket.on('online-users', (list) => setOnline(new Set(list || [])));
-
-    socket.on('disconnect', () => {
-      // keep UI but mark socket disconnected if you want
-      console.log('socket disconnected');
-    });
-
-    return () => {
-      if (socket && socket.connected && currentUserId) {
-        // tell server you're leaving (optional) - server will handle disconnect too
-        socket.emit('unregister', currentUserId);
+    function onStorage(e) {
+      if (e.key === "user") {
+        try {
+          const parsed = e.newValue ? JSON.parse(e.newValue) : null;
+          const id = parsed?.id || parsed?._id || parsed?.user?.id || parsed?.user?._id;
+          setCurrentUser(id ? { id: String(id), name: parsed?.name || "", email: parsed?.email || "" } : null);
+        } catch (err) {
+          setCurrentUser(null);
+        }
       }
-      socket.disconnect();
-    };
-  }, [currentUserId]);
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
-  // helper render for avatar + status dot
-  const MemberRow = ({ member }) => {
-    const isOnline = online.has(member.id);
-    return (
-      <div className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50">
-        <div className="relative">
-          <img
-            src={member.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(member.name)}`}
-            alt={member.name}
-            className="w-10 h-10 rounded-full object-cover"
-          />
-          <span
-            className={`absolute -right-0.5 -bottom-0.5 w-3 h-3 rounded-full border-2 border-white ${
-              isOnline ? 'bg-green-500' : 'bg-gray-300'
-            }`}
-            title={isOnline ? 'Online' : 'Offline'}
-          />
-        </div>
-        <div className="flex-1">
-          <div className="font-medium text-sm">{member.name}</div>
-          <div className="text-xs text-gray-500">{member.email || ''}</div>
-        </div>
-        <div className="text-xs text-gray-500">{isOnline ? 'Online' : 'Offline'}</div>
-      </div>
-    );
+  const fetchMembers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await axios.get("http://localhost:3001/members");
+      setMembers(res.data || []);
+    } catch (err) {
+      console.error("Failed to load members", err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => { fetchMembers(); }, [fetchMembers]);
+
+  // Socket effect - depends only on primitive userId
+ // --- inside Members.jsx (replace your socket-useEffect) ---
+useEffect(() => {
+  const userId = currentUser?.id;
+  if (!userId) {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+    setOnlineIds([]);
+    return;
+  }
+
+  // create ONE socket and disable auto reconnection so we don't loop
+  const socket = io("http://localhost:3001", {
+    transports: ["polling", "websocket"],
+    autoConnect: false,
+    reconnection: false, // important: do not auto reconnect while debugging
+    timeout: 5000,
+  });
+
+  socketRef.current = socket;
+
+  // connect manually once
+  socket.connect();
+
+  // handlers
+  function onConnect() {
+    console.log("[socket] connected", socket.id);
+    socket.emit("user-online", String(userId));
+  }
+  function onDisconnect(reason) {
+    console.log("[socket] disconnected", socket.id, "reason:", reason);
+  }
+  function onConnectError(err) {
+    // VERY IMPORTANT: this shows why the connect failed (CORS, auth, ECONNREFUSED, etc.)
+    console.error("[socket] connect_error:", err && err.message ? err.message : err);
+    // since reconnection is disabled, we won't loop — but we can still cleanup
+  }
+  function onUpdate(ids) {
+    if (!Array.isArray(ids)) return;
+    setOnlineIds(ids.map(id => String(id)));
+  }
+
+  socket.on("connect", onConnect);
+  socket.on("disconnect", onDisconnect);
+  socket.on("connect_error", onConnectError);
+  socket.on("update-online-status", onUpdate);
+
+  // safety: after 6s, if not connected, log diagnostic and keep socket disconnected
+  const timer = setTimeout(() => {
+    if (!socket.connected) {
+      console.warn("[socket] not connected after 6s — check server logs, CORS, network, or server crashes");
+    }
+  }, 6000);
+
+  return () => {
+    clearTimeout(timer);
+    if (!socket) return;
+    socket.off("connect", onConnect);
+    socket.off("disconnect", onDisconnect);
+    socket.off("connect_error", onConnectError);
+    socket.off("update-online-status", onUpdate);
+    try { socket.disconnect(); } catch (e) { /* ignore */ }
+    socketRef.current = null;
   };
+}, [currentUser?.id]);
+// --- inside Members.jsx (replace your socket-useEffect) ---
+useEffect(() => {
+  const userId = currentUser?.id;
+  if (!userId) {
+    if (socketRef.current) {
+      socketRef.current.disconnect();
+      socketRef.current = null;
+    }
+    setOnlineIds([]);
+    return;
+  }
+
+  // create ONE socket and disable auto reconnection so we don't loop
+  const socket = io("http://localhost:3001", {
+    transports: ["polling", "websocket"],
+    autoConnect: false,
+    reconnection: false, // important: do not auto reconnect while debugging
+    timeout: 5000,
+  });
+
+  socketRef.current = socket;
+
+  // connect manually once
+  socket.connect();
+
+  // handlers
+  function onConnect() {
+    console.log("[socket] connected", socket.id);
+    socket.emit("user-online", String(userId));
+  }
+  function onDisconnect(reason) {
+    console.log("[socket] disconnected", socket.id, "reason:", reason);
+  }
+  function onConnectError(err) {
+    // VERY IMPORTANT: this shows why the connect failed (CORS, auth, ECONNREFUSED, etc.)
+    console.error("[socket] connect_error:", err && err.message ? err.message : err);
+    // since reconnection is disabled, we won't loop — but we can still cleanup
+  }
+  function onUpdate(ids) {
+    if (!Array.isArray(ids)) return;
+    setOnlineIds(ids.map(id => String(id)));
+  }
+
+  socket.on("connect", onConnect);
+  socket.on("disconnect", onDisconnect);
+  socket.on("connect_error", onConnectError);
+  socket.on("update-online-status", onUpdate);
+
+  // safety: after 6s, if not connected, log diagnostic and keep socket disconnected
+  const timer = setTimeout(() => {
+    if (!socket.connected) {
+      console.warn("[socket] not connected after 6s — check server logs, CORS, network, or server crashes");
+    }
+  }, 6000);
+
+  return () => {
+    clearTimeout(timer);
+    if (!socket) return;
+    socket.off("connect", onConnect);
+    socket.off("disconnect", onDisconnect);
+    socket.off("connect_error", onConnectError);
+    socket.off("update-online-status", onUpdate);
+    try { socket.disconnect(); } catch (e) { /* ignore */ }
+    socketRef.current = null;
+  };
+}, [currentUser?.id]);
+
+  const handleRefresh = async () => { await fetchMembers(); };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Members</h2>
-        <div className="text-sm text-gray-600">Total: {members.length}</div>
-      </div>
+    <div className="p-6">
+      <div className="max-w-4xl mx-auto bg-white shadow rounded-lg p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-2xl font-semibold">Members</h1>
+            <p className="text-sm text-gray-500">All registered members and their online status</p>
+          </div>
 
-      <div className="bg-white shadow-sm rounded-lg divide-y">
-        {members.length === 0 && (
-          <div className="p-6 text-center text-gray-500">No registered members found.</div>
-        )}
-        {members.map((m) => (
-          <MemberRow key={m.id} member={m} />
-        ))}
+          <div className="flex items-center gap-2">
+            <button onClick={handleRefresh} className="px-3 py-1 rounded border">Refresh</button>
+            <div className="text-sm text-gray-600">
+              {currentUser && currentUser.id ? (
+                <span>Signed in as <strong>{currentUser.name || currentUser.email}</strong></span>
+              ) : (
+                <span style={{ color: "red" }}>Not signed in</span>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div>
+          {loading ? <p>Loading members…</p> : members.length === 0 ? <p>No members found.</p> : (
+            <ul>
+              {members.map(m => {
+                const memberId = String(m._id || m.id);
+                const isOnline = onlineIds.includes(memberId);
+                const isSelf = currentUser && String(currentUser.id) === memberId;
+                return (
+                  <li key={memberId} style={{ display: "flex", justifyContent: "space-between", padding: 12, borderBottom: "1px solid #eee" }}>
+                    <div>
+                      <strong>{m.name}</strong><div style={{ color: "#666" }}>{m.email}</div>
+                    </div>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <span style={{
+                        width: 10, height: 10, borderRadius: 10,
+                        background: isOnline ? "green" : "#ccc", display: "inline-block"
+                      }} />
+                      <span>{isOnline ? "Online" : "Offline"}</span>
+                      {isSelf && <span style={{ padding: "2px 6px", border: "1px solid #ccc", borderRadius: 4 }}>You</span>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       </div>
     </div>
   );

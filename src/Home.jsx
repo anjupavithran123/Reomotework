@@ -1,9 +1,8 @@
 import React, { useState,useEffect } from "react";
 import { FaBars } from "react-icons/fa";
-
 import axios from "axios";
-
 import ProfilepicUpload from "./profilepic";
+
 
 function Home(){
 
@@ -16,7 +15,7 @@ function Home(){
 
 
     const [profilePic, setProfilePic] = useState(null);
-    useEffect(() => {
+       useEffect(() => {
         // Example: fetch last uploaded profile pic
         axios.get("http://localhost:4000/user-profile").then((res) => {
           if (res.data.filename) {
@@ -64,7 +63,14 @@ function Home(){
               <li>
                     <a href="/whiteboard">White-Board</a>
                 </li> 
+                <li>
+                    <a href="/email">Invite email</a>
+                </li>  
+                <li>
+                    <a href="/videocall">Video-Chat</a>
+                </li> 
               </ul>
+              
            <div className="icon"onClick={toggleMenu}>
            <FaBars />
            </div>

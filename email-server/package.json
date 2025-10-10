@@ -1,5 +1,5 @@
 {
-  "name": "member-server",
+  "name": "email-server",
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
@@ -7,11 +7,16 @@
     "start": "node server.js"
   },
   "keywords": [],
+  "type": "module",
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.3",
     "express": "^5.1.0",
-    "socket.io": "^4.8.1"
+    "mongoose": "^8.19.1",
+    "nodemailer": "^7.0.9",
+    "validator": "^13.15.15"
   }
 }
