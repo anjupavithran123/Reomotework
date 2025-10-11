@@ -1,94 +1,142 @@
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import axios from "axios";
 import ProfilepicUpload from "./profilepic";
+import { io } from "socket.io-client";
 
+const SERVER_URL = "http://localhost:4000"; // for doc/taskboard
+const CHAT_SERVER_URL = "http://localhost:3002"; // new
+const WATCH_DOC_ID = "default-doc";
+const WATCH_BOARD_ID = "default-board";
 
-function Home(){
+function Home() {
+  const [isOpen, setIsOPen] = useState(false);
+  const toggleMenu = () => setIsOPen(!isOpen);
 
+  const [profilePic, setProfilePic] = useState(null);
+  const [docNotifications, setDocNotifications] = useState({});
+  const [taskboardNotifications, setTaskboardNotifications] = useState({});
+  const [chatNotifications, setChatNotifications] = useState(0); 
+  const [socketStatus, setSocketStatus] = useState("disconnected");
 
-    const[isOpen,setIsOPen]=useState(false);
-    const toggleMenu = ()=>{
-        setIsOPen(!isOpen);
-    };
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/user-profile")
+      .then((res) => {
+        if (res.data?.filename) {
+          setProfilePic(`http://localhost:4000/uploads/${res.data.filename}`);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
+  // 🔹 Connect to main workspace socket
+  useEffect(() => {
+    const socket = io(SERVER_URL, {
+      autoConnect: true,
+      reconnectionAttempts: 5,
+    });
 
+    socket.on("connect", () => {
+      console.log("Home connected to socket", socket.id);
+      setSocketStatus("connected");
+      socket.emit("join-doc", { docId: WATCH_DOC_ID, username: "home-notifier" });
+      socket.emit("join-board", { boardId: WATCH_BOARD_ID });
+    });
 
-    const [profilePic, setProfilePic] = useState(null);
-       useEffect(() => {
-        // Example: fetch last uploaded profile pic
-        axios.get("http://localhost:4000/user-profile").then((res) => {
-          if (res.data.filename) {
-            setProfilePic(`http://localhost:4000/uploads/${res.data.filename}`);
-          }
-        });
-    }, []);
+    socket.on("connect_error", (err) => setSocketStatus("connect_error"));
+    socket.on("disconnect", () => setSocketStatus("disconnected"));
 
+    socket.on("doc-updated", ({ docId }) =>
+      setDocNotifications((prev) => ({ ...prev, [docId]: (prev[docId] || 0) + 1 }))
+    );
 
+    socket.on("taskboard-updated", (payload) => {
+      const boardId = payload?.boardId || WATCH_BOARD_ID;
+      setTaskboardNotifications((prev) => ({ ...prev, [boardId]: (prev[boardId] || 0) + 1 }));
+    });
 
-    return(
-   <>
-       <header>
-       <div className="logo">
-                    <h2>Workspace dashboard</h2>
-              </div>
+    return () => socket.disconnect();
+  }, []);
+
+  // 🔹 Connect to CHAT SERVER for new messages
+  useEffect(() => {
+    const chatSocket = io(CHAT_SERVER_URL, { autoConnect: true });
+
+    chatSocket.on("connect", () => console.log("Connected to chat server"));
+    chatSocket.on("message", (msg) => {
+      console.log("New chat message:", msg);
+      setChatNotifications((count) => count + 1); // increase badge count
+    });
+
+    return () => chatSocket.disconnect();
+  }, []);
+
+  const handleDocsClick = () =>
+    setDocNotifications((prev) => ({ ...prev, [WATCH_DOC_ID]: 0 }));
+
+  const handleTaskboardClick = () =>
+    setTaskboardNotifications((prev) => ({ ...prev, [WATCH_BOARD_ID]: 0 }));
+
+  const handleChatClick = () => setChatNotifications(0); // 🆕
+
+  const docsBadgeCount = docNotifications[WATCH_DOC_ID] || 0;
+  const taskboardBadgeCount = taskboardNotifications[WATCH_BOARD_ID] || 0;
+
+  return (
+    <>
+      <style>{`
+        .nave-link { display:flex; flex-direction:column; gap:8px; padding:0; }
+        .badge { display:inline-block; min-width:18px; padding:2px 6px; font-size:12px; border-radius:12px; background:#e11d48; color:white; margin-left:8px; }
+        .docs-link { display:inline-flex; align-items:center; gap:6px; }
+        .status { font-size:12px; margin-left:12px; color:#666; }
+      `}</style>
+
+      <header>
+        <div className="logo"><h2>Workspace dashboard</h2></div>
         <div className="container">
-           
-
-            <nav>
-             <br />
-              <div>
+          <nav>
+            <div>
               <h2>Anju MP</h2>
-              <ProfilepicUpload/>
-              </div>
-              
-              <ul className={isOpen ? 'nav-link active':"nave-link"}>
-                <li>
-                    <a href="/members">Members</a>
-                </li>
-
-                <li>
-                    <a href="/chatcontainer">ChatBox</a>
-                </li>
-
-                <li>
-                    <a href="/document">Docs Editor</a>
-                </li>
-                <li>
-                    <a href="/taskboard">Taskboard</a>
-                </li>
-                <li>
-                    <a href="/fileupload">Fileupload</a>
-                </li>
-              <li>
-                    <a href="/whiteboard">White-Board</a>
-                </li> 
-                <li>
-                    <a href="/email">Invite email</a>
-                </li>  
-                <li>
-                    <a href="/videocall">Video-Chat</a>
-                </li> 
-              </ul>
-              
-           <div className="icon"onClick={toggleMenu}>
-           <FaBars />
-           </div>
-
-            </nav>
-          
-        </div>
-       </header>
-       {/* <section>
-        <div className="container">
-            <div className="content">
-                <h2>responsive</h2>
+              <ProfilepicUpload />
             </div>
-        </div>
-       </section> */}
-       </>
 
-    )
+            <ul className={isOpen ? "nav-link active" : "nave-link"}>
+              <li><a href="/members">Members</a></li>
+
+              <li>
+                <a href="/chatcontainer" onClick={handleChatClick} className="docs-link">
+                  ChatBox
+                  {chatNotifications > 0 && <span className="badge">{chatNotifications}</span>}
+                </a>
+              </li>
+
+              <li>
+                <a href="/document" onClick={handleDocsClick} className="docs-link">
+                  Docs Editor
+                  {docsBadgeCount > 0 && <span className="badge">{docsBadgeCount}</span>}
+                </a>
+              </li>
+
+              <li>
+                <a href="/taskboard" onClick={handleTaskboardClick} className="docs-link">
+                  Taskboard
+                  {taskboardBadgeCount > 0 && <span className="badge">{taskboardBadgeCount}</span>}
+                </a>
+              </li>
+
+              <li><a href="/fileupload">Fileupload</a></li>
+              <li><a href="/whiteboard">White-Board</a></li>
+              <li><a href="/email">Invite email</a></li>
+              <li><a href="/videocall">Video-Chat</a></li>
+            </ul>
+
+            <div className="icon" onClick={toggleMenu}><FaBars /></div>
+          </nav>
+        </div>
+      </header>
+    </>
+  );
 }
 
 export default Home;

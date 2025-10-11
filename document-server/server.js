@@ -22,13 +22,14 @@ io.on('connection', (socket) => {
     console.log(`${username || 'user'} joining doc ${docId}`);
     socket.join(docId);
 
-    // initialize doc if first time
     if (!docs[docId]) {
-      docs[docId] = new Delta(); // empty delta
+      docs[docId] = new Delta();
     }
 
-    // send current doc contents to new client
     socket.emit('load-doc', docs[docId].ops);
+
+    // store username locally for this socket
+    socket.username = username || 'Anonymous';
 
     // track presence (simple)
     const room = io.sockets.adapter.rooms.get(docId) || new Set();
@@ -37,30 +38,40 @@ io.on('connection', (socket) => {
       const s = io.sockets.sockets.get(id);
       users.push({ id, username: s?.username || 'Anonymous' });
     }
-    // store username locally for this socket
-    socket.username = username || 'Anonymous';
     io.to(docId).emit('presence', users);
 
-    // handle deltas sent by client
     socket.on('send-delta', (delta) => {
-      try {
-        const incoming = new Delta(delta);
-        // compose into server document
-        docs[docId] = docs[docId].compose(incoming);
-        // broadcast delta to everyone else in room
-        socket.to(docId).emit('receive-delta', delta);
-      } catch (err) {
-        console.error('delta compose error', err);
-      }
+     // inside socket.on('send-delta', (delta) => { ... })
+try {
+  const incoming = new Delta(delta);
+  const pendingNotify = {};
+  docs[docId] = docs[docId].compose(incoming);
+  socket.to(docId).emit('receive-delta', delta);
+
+  const payload = {
+    docId,
+    updatedBy: socket.username || 'Anonymous',
+    timestamp: Date.now(),
+  };
+
+  // room-scoped (existing)
+  io.to(docId).emit('doc-updated', payload);
+
+  // GLOBAL fallback so pages that aren't joined to the room still see updates (Home badge)
+  io.emit('doc-updated-all', payload);
+
+  console.log('doc-updated emitted for', docId, 'by', payload.updatedBy);
+} catch (err) {
+  console.error('delta compose error', err);
+}
+
     });
 
-    // optional: save doc (persisting omitted here)
     socket.on('save-doc', () => {
       console.log(`Saving doc ${docId}: ops length ${docs[docId].ops.length}`);
       // persist to disk / DB here if desired
     });
 
-    // handle disconnect and update presence
     socket.on('disconnect', () => {
       console.log('socket disconnected', socket.id);
       const roomAfter = io.sockets.adapter.rooms.get(docId) || new Set();

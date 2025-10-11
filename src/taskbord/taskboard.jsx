@@ -1,9 +1,13 @@
+// TaskBoard.jsx
 import React, { useEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import axios from "axios";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:4000");
+const SERVER = "http://localhost:4000";
+const BOARD_ID = "default-board";
+
+const socket = io(SERVER);
 
 export default function TaskBoard() {
   const [lists, setLists] = useState([]);
@@ -12,7 +16,7 @@ export default function TaskBoard() {
 
   const fetchLists = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/lists");
+      const res = await axios.get(`${SERVER}/lists`);
       setLists(res.data);
     } catch (err) {
       console.error(err);
@@ -21,12 +25,24 @@ export default function TaskBoard() {
 
   useEffect(() => {
     fetchLists();
+
+    // join board room (so server can emit only to this room if desired)
+    socket.on("connect", () => {
+      socket.emit("join-board", { boardId: BOARD_ID });
+    });
+
     socket.on("listsUpdated", fetchLists);
     socket.on("tasksUpdated", fetchLists);
+    // also listen to our new event
+    socket.on("taskboard-updated", (payload) => {
+      // we can optionally handle or ignore here; fetch to update UI
+      fetchLists();
+    });
 
     return () => {
-      socket.off("listsUpdated");
-      socket.off("tasksUpdated");
+      socket.off("listsUpdated", fetchLists);
+      socket.off("tasksUpdated", fetchLists);
+      socket.off("taskboard-updated");
     };
   }, []);
 
@@ -36,8 +52,9 @@ export default function TaskBoard() {
 
     if (source.droppableId !== destination.droppableId) {
       try {
-        await axios.put(`http://localhost:4000/tasks/${draggableId}`, {
+        await axios.put(`${SERVER}/tasks/${draggableId}`, {
           listId: destination.droppableId,
+          boardId: BOARD_ID,
         });
       } catch (err) {
         console.error(err);
@@ -48,7 +65,7 @@ export default function TaskBoard() {
   const addList = async () => {
     if (!newListTitle) return;
     try {
-      await axios.post("http://localhost:4000/lists", { title: newListTitle });
+      await axios.post(`${SERVER}/lists`, { title: newListTitle, boardId: BOARD_ID });
       setNewListTitle("");
     } catch (err) {
       console.error(err);
@@ -60,7 +77,7 @@ export default function TaskBoard() {
     if (!content) return;
 
     try {
-      await axios.post("http://localhost:4000/tasks", { content, listId });
+      await axios.post(`${SERVER}/tasks`, { content, listId, boardId: BOARD_ID });
       setNewTaskContent({ ...newTaskContent, [listId]: "" });
     } catch (err) {
       console.error(err);
@@ -69,7 +86,7 @@ export default function TaskBoard() {
 
   const deleteList = async (listId) => {
     try {
-      await axios.delete(`http://localhost:4000/lists/${listId}`);
+      await axios.delete(`${SERVER}/lists/${listId}`, { data: { boardId: BOARD_ID } });
     } catch (err) {
       console.error(err);
     }
@@ -77,7 +94,7 @@ export default function TaskBoard() {
 
   const deleteTask = async (taskId) => {
     try {
-      await axios.delete(`http://localhost:4000/tasks/${taskId}`);
+      await axios.delete(`${SERVER}/tasks/${taskId}`, { data: { boardId: BOARD_ID } });
     } catch (err) {
       console.error(err);
     }
@@ -161,9 +178,7 @@ export default function TaskBoard() {
                       type="text"
                       placeholder="New Task"
                       value={newTaskContent[list._id] || ""}
-                      onChange={(e) =>
-                        setNewTaskContent({ ...newTaskContent, [list._id]: e.target.value })
-                      }
+                      onChange={(e) => setNewTaskContent({ ...newTaskContent, [list._id]: e.target.value })}
                     />
                     <button onClick={() => addTask(list._id)}>Add Task</button>
                   </div>
