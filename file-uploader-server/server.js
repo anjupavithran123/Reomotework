@@ -28,6 +28,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
   });
 });
 
-app.listen(4000, () => {
-  console.log('Upload server listening on http://localhost:4000');
+app.listen(4002, () => {
+  console.log('Upload server listening on http://localhost:4002');
 });

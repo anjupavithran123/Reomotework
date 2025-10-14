@@ -1,119 +1,99 @@
-// server.js
+// server/index.js
 import express from "express";
-import cors from "cors";
 import nodemailer from "nodemailer";
-import crypto from "crypto";
+import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+import cors from "cors";
+import bodyParser from "body-parser";
 
 dotenv.config();
 
 const app = express();
-app.use(cors());
-app.use(express.json());
+app.use(cors({ origin: "http://localhost:5173" })); // allow react dev server
+app.use(bodyParser.json());
 
-// ✅ In-memory store (replace with DB later)
-const invites = new Map();
+const PORT = process.env.PORT || 4003;
+const JWT_SECRET = process.env.JWT_SECRET || "replace_with_strong_secret";
+const FRONTEND_REGISTER_URL = process.env.FRONTEND_REGISTER_URL || "http://localhost:5173/register";
+const INVITE_EXPIRATION_SECONDS = 60 * 60 * 24 * 3; // invite valid for 3 days
 
-// ✅ Create nodemailer transporter
+// configure nodemailer transporter
+// Example using a Gmail account via OAuth2 is preferred in prod; this is a simple SMTP example.
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT || 587),
-  secure: process.env.SMTP_SECURE === "true", // true for 465, false for 587
+  host: process.env.SMTP_HOST || "smtp.gmail.com",
+  port: parseInt(process.env.SMTP_PORT || "587"),
+  secure: false,
   auth: {
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  tls: {
-    rejectUnauthorized: false, // ignore certificate issues (good for dev)
-  },
 });
 
-// ✅ Verify SMTP connection
-transporter
-  .verify()
-  .then(() => console.log("📬 Mailer connected successfully"))
-  .catch((err) => console.error("❌ Mailer verify failed:", err));
-// Add before your routes
-app.use((req, res, next) => {
-  console.log(new Date().toISOString(), req.method, req.originalUrl);
-  next();
-});
+// Helper: build invite token
+function createInviteToken({ email, workspaceId }) {
+  const payload = {
+    email,
+    workspaceId,
+    // any other metadata
+  };
+  const token = jwt.sign(payload, JWT_SECRET, { expiresIn: INVITE_EXPIRATION_SECONDS });
+  return token;
+}
 
-// ✅ Route to send invites
-app.post("/api/invites", async (req, res) => {
+// POST /api/invite
+// body: { email: string, workspaceId?: string, inviterName?: string }
+app.post("/api/invite", async (req, res) => {
+  const { email, workspaceId = "default-workspace", inviterName = "Someone" } = req.body || {};
+
+  if (!email) return res.status(400).json({ error: "Email is required" });
+
   try {
-    const {
-      email,
-      role = "member",
-      workspaceName = "My Workspace",
-      registerUrl = "http://localhost:5173/register",
-      message = "",
-    } = req.body;
+    // create token
+    const token = createInviteToken({ email, workspaceId });
 
-    if (!email) return res.status(400).json({ error: "Missing email" });
+    // build link points to frontend register page
+    const inviteLink = `${FRONTEND_REGISTER_URL}?token=${encodeURIComponent(token)}`;
 
-    // Generate one-time token
-    const token = crypto.randomBytes(20).toString("hex");
-    invites.set(token, { email, role, workspaceName, used: false, createdAt: Date.now() });
-
-    // Invite link for the user
-    const inviteLink = `${registerUrl}?token=${token}&email=${encodeURIComponent(email)}`;
-
-    // Email content
+    // email content (HTML)
     const html = `
-      <div style="font-family:Arial, sans-serif;">
-        <h2>You've been invited to join ${workspaceName}</h2>
-        <p>${message || "Click below to accept the invite and register."}</p>
-        <a href="${inviteLink}" 
-          style="background:#2563eb;color:white;padding:10px 16px;text-decoration:none;border-radius:6px;">
-          Accept Invite
-        </a>
-        <p style="margin-top:20px;">If you didn't expect this invite, you can safely ignore it.</p>
-      </div>
+      <p>Hi —</p>
+      <p>${inviterName} invited you to join workspace <strong>${workspaceId}</strong>.</p>
+      <p>Click to join: <a href="${inviteLink}">Accept invite</a></p>
+      <p>If the link doesn't open, paste this URL into your browser:</p>
+      <p><small>${inviteLink}</small></p>
+      <hr/>
+      <p>This link expires in ${Math.round(INVITE_EXPIRATION_SECONDS / (60*60*24))} days.</p>
     `;
 
-    // Send the email
-    await transporter.sendMail({
-      from: process.env.FROM_EMAIL || process.env.SMTP_USER,
+    const mailOptions = {
+      from: `"${process.env.FROM_NAME || "My App"}" <${process.env.SMTP_FROM || process.env.SMTP_USER}>`,
       to: email,
-      subject: `Invite to join ${workspaceName}`,
+      subject: `${inviterName} invited you to join ${process.env.APP_NAME || "our workspace"}`,
       html,
-    });
+    };
 
-    console.log(`✅ Invite sent to ${email}`);
-    res.json({ ok: true });
+    // send
+    await transporter.sendMail(mailOptions);
+
+    return res.json({ ok: true, message: "Invite sent", inviteLink /* include for dev */ });
   } catch (err) {
-    console.error("Invite send error:", err);
-    res.status(500).json({ error: "Failed to send invite" });
+    console.error("Invite error:", err);
+    return res.status(500).json({ error: "Failed to send invite" });
   }
 });
 
-// ✅ Validate invite token
-app.get("/api/invites/validate/:token", (req, res) => {
-  const { token } = req.params;
-  const invite = invites.get(token);
+// Optional: endpoint to verify token from client if you want server-side verification
+app.post("/api/verify-invite", (req, res) => {
+  const { token } = req.body || {};
+  if (!token) return res.status(400).json({ error: "Token required" });
 
-  if (!invite) return res.status(404).json({ valid: false, error: "Invalid token" });
-  if (invite.used) return res.status(400).json({ valid: false, error: "Invite already used" });
-
-  res.json({ valid: true, email: invite.email, role: invite.role, workspaceName: invite.workspaceName });
+  try {
+    const payload = jwt.verify(token, JWT_SECRET);
+    // payload contains email, workspaceId
+    return res.json({ valid: true, payload });
+  } catch (err) {
+    return res.status(400).json({ valid: false, error: err.message });
+  }
 });
 
-// ✅ Mark invite as used
-app.post("/api/invites/consume/:token", (req, res) => {
-  const { token } = req.params;
-  const invite = invites.get(token);
-  if (!invite) return res.status(404).json({ error: "Invalid token" });
-
-  invite.used = true;
-  invites.set(token, invite);
-  res.json({ ok: true });
-});
-
-app.use((req, res) => {
-  res.status(404).json({ ok: false, debug: `No route for ${req.method} ${req.originalUrl}` });
-});
-
-// ✅ Start server
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`🚀 Email invite server running on http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Invite server running on ${PORT}`));

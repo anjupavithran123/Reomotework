@@ -59,6 +59,7 @@ export default function Login() {
             <input
           
               type="email"
+              className="form-control rounded"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -70,6 +71,7 @@ export default function Login() {
             <label>Password</label><br />
             <input
               type="password"
+              className="form-control rounded"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required

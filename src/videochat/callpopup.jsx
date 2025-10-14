@@ -8,7 +8,7 @@ if (typeof global === 'undefined') {
   window.global = window;
 }
 
-const SIGNALING_SERVER = import.meta.env.REACT_APP_SIGNALING_SERVER || 'http://localhost:4000';
+const SIGNALING_SERVER = import.meta.env.REACT_APP_SIGNALING_SERVER || 'http://localhost:4005';
 
 export default function CallPopup({ roomId, userName = 'Guest', open = false, onClose = () => {} }) {
   const socketRef = useRef(null);

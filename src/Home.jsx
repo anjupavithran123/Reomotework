@@ -1,10 +1,11 @@
+// Home.jsx
 import React, { useState, useEffect } from "react";
 import { FaBars } from "react-icons/fa";
 import axios from "axios";
 import ProfilepicUpload from "./profilepic";
 import { io } from "socket.io-client";
 
-const SERVER_URL = "http://localhost:4000"; // for doc/taskboard
+const SERVER_URL = "http://localhost:4001"; // for doc/taskboard
 const CHAT_SERVER_URL = "http://localhost:3002"; // new
 const WATCH_DOC_ID = "default-doc";
 const WATCH_BOARD_ID = "default-board";
@@ -16,10 +17,29 @@ function Home() {
   const [profilePic, setProfilePic] = useState(null);
   const [docNotifications, setDocNotifications] = useState({});
   const [taskboardNotifications, setTaskboardNotifications] = useState({});
-  const [chatNotifications, setChatNotifications] = useState(0); 
+  const [chatNotifications, setChatNotifications] = useState(0);
   const [socketStatus, setSocketStatus] = useState("disconnected");
 
+  // new: user state read from localStorage (saved by your Login component)
+  const [user, setUser] = useState(() => {
+    try {
+      const raw = localStorage.getItem("user");
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (e) {
+      console.warn("Failed to parse user from localStorage", e);
+      return null;
+    }
+  });
+
   useEffect(() => {
+    // if you later set avatar/filename in user object you can prefer it
+    // otherwise existing GET /user-profile will set profilePic if available
+    if (user?.avatar) {
+      setProfilePic(user.avatar);
+    }
+
+    // Try to fetch server profile (keeps your previous behavior)
     axios
       .get("http://localhost:4000/user-profile")
       .then((res) => {
@@ -28,7 +48,7 @@ function Home() {
         }
       })
       .catch(() => {});
-  }, []);
+  }, [user]);
 
   // 🔹 Connect to main workspace socket
   useEffect(() => {
@@ -40,8 +60,15 @@ function Home() {
     socket.on("connect", () => {
       console.log("Home connected to socket", socket.id);
       setSocketStatus("connected");
+
+      // join rooms as before
       socket.emit("join-doc", { docId: WATCH_DOC_ID, username: "home-notifier" });
       socket.emit("join-board", { boardId: WATCH_BOARD_ID });
+
+      // new: let server know which user is online (if we have user id)
+      if (user && user.id) {
+        socket.emit("user-online", user.id);
+      }
     });
 
     socket.on("connect_error", (err) => setSocketStatus("connect_error"));
@@ -57,7 +84,8 @@ function Home() {
     });
 
     return () => socket.disconnect();
-  }, []);
+    // include `user` as dependency so user-online can be emitted if user loads later
+  }, [user]);
 
   // 🔹 Connect to CHAT SERVER for new messages
   useEffect(() => {
@@ -83,6 +111,9 @@ function Home() {
   const docsBadgeCount = docNotifications[WATCH_DOC_ID] || 0;
   const taskboardBadgeCount = taskboardNotifications[WATCH_BOARD_ID] || 0;
 
+  // display name fallback
+  const displayName = user?.name || "Anonymous";
+
   return (
     <>
       <style>{`
@@ -90,15 +121,24 @@ function Home() {
         .badge { display:inline-block; min-width:18px; padding:2px 6px; font-size:12px; border-radius:12px; background:#e11d48; color:white; margin-left:8px; }
         .docs-link { display:inline-flex; align-items:center; gap:6px; }
         .status { font-size:12px; margin-left:12px; color:#666; }
+        .profile-img { width:40px; height:40px; border-radius:50%; object-fit:cover; margin-left:8px; }
       `}</style>
 
       <header>
         <div className="logo"><h2>Workspace dashboard</h2></div>
         <div className="container">
           <nav>
-            <div>
-              <h2>Anju MP</h2>
-              <ProfilepicUpload />
+
+              <div>
+                <h2>{displayName}</h2>
+            
+
+              {/* show profile pic if available, else render ProfilepicUpload component */}
+              {profilePic ? (
+                <img src={profilePic} alt="profile" className="profile-img" />
+              ) : (
+                <ProfilepicUpload />
+              )}
             </div>
 
             <ul className={isOpen ? "nav-link active" : "nave-link"}>

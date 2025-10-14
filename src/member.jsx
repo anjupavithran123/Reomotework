@@ -121,69 +121,77 @@ useEffect(() => {
 }, [currentUser?.id]);
 // --- inside Members.jsx (replace your socket-useEffect) ---
 useEffect(() => {
-  const userId = currentUser?.id;
+  const userId = currentUser?.id ? String(currentUser.id) : null;
+
+  // If no signed-in user, clean up and return
   if (!userId) {
     if (socketRef.current) {
-      socketRef.current.disconnect();
+      try { socketRef.current.disconnect(); } catch (e) {}
       socketRef.current = null;
     }
     setOnlineIds([]);
     return;
   }
 
-  // create ONE socket and disable auto reconnection so we don't loop
-  const socket = io("http://localhost:3001", {
-    transports: ["polling", "websocket"],
-    autoConnect: false,
-    reconnection: false, // important: do not auto reconnect while debugging
-    timeout: 5000,
-  });
+  // If there's already a connected socket for this tab, reuse it
+  if (socketRef.current && socketRef.current.connected) {
+    // ensure server knows this client's user id (in case of reload)
+    socketRef.current.emit("user-online", userId);
+  } else {
+    // create a single socket instance
+    const socket = io("http://localhost:3001", {
+      transports: ["polling", "websocket"],
+      autoConnect: false,
+      // you can set reconnection: true in production
+      reconnection: false,
+      timeout: 5000,
+    });
 
-  socketRef.current = socket;
+    socketRef.current = socket;
 
-  // connect manually once
-  socket.connect();
+    // handlers
+    const onConnect = () => {
+      console.log("[socket] connected", socket.id);
+      socket.emit("user-online", userId);
+    };
+    const onDisconnect = (reason) => {
+      console.log("[socket] disconnected", socket.id, "reason:", reason);
+    };
+    const onConnectError = (err) => {
+      console.error("[socket] connect_error:", err && err.message ? err.message : err);
+    };
+    const onUpdate = (ids) => {
+      if (!Array.isArray(ids)) return;
+      setOnlineIds(ids.map(id => String(id)));
+    };
 
-  // handlers
-  function onConnect() {
-    console.log("[socket] connected", socket.id);
-    socket.emit("user-online", String(userId));
+    socket.on("connect", onConnect);
+    socket.on("disconnect", onDisconnect);
+    socket.on("connect_error", onConnectError);
+    socket.on("update-online-status", onUpdate);
+
+    // connect
+    socket.connect();
+
+    // safety timer to help debug connection failures
+    const timer = setTimeout(() => {
+      if (!socket.connected) {
+        console.warn("[socket] not connected after 6s — check server, CORS or network");
+      }
+    }, 6000);
+
+    // cleanup
+    return () => {
+      clearTimeout(timer);
+      if (!socketRef.current) return;
+      socket.off("connect", onConnect);
+      socket.off("disconnect", onDisconnect);
+      socket.off("connect_error", onConnectError);
+      socket.off("update-online-status", onUpdate);
+      try { socketRef.current.disconnect(); } catch (e) {}
+      socketRef.current = null;
+    };
   }
-  function onDisconnect(reason) {
-    console.log("[socket] disconnected", socket.id, "reason:", reason);
-  }
-  function onConnectError(err) {
-    // VERY IMPORTANT: this shows why the connect failed (CORS, auth, ECONNREFUSED, etc.)
-    console.error("[socket] connect_error:", err && err.message ? err.message : err);
-    // since reconnection is disabled, we won't loop — but we can still cleanup
-  }
-  function onUpdate(ids) {
-    if (!Array.isArray(ids)) return;
-    setOnlineIds(ids.map(id => String(id)));
-  }
-
-  socket.on("connect", onConnect);
-  socket.on("disconnect", onDisconnect);
-  socket.on("connect_error", onConnectError);
-  socket.on("update-online-status", onUpdate);
-
-  // safety: after 6s, if not connected, log diagnostic and keep socket disconnected
-  const timer = setTimeout(() => {
-    if (!socket.connected) {
-      console.warn("[socket] not connected after 6s — check server logs, CORS, network, or server crashes");
-    }
-  }, 6000);
-
-  return () => {
-    clearTimeout(timer);
-    if (!socket) return;
-    socket.off("connect", onConnect);
-    socket.off("disconnect", onDisconnect);
-    socket.off("connect_error", onConnectError);
-    socket.off("update-online-status", onUpdate);
-    try { socket.disconnect(); } catch (e) { /* ignore */ }
-    socketRef.current = null;
-  };
 }, [currentUser?.id]);
 
   const handleRefresh = async () => { await fetchMembers(); };

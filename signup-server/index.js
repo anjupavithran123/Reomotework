@@ -10,10 +10,10 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "http://localhost:3000", methods: ["GET", "POST"] },
-  // allow both transports (polling for older clients / network conditions)
-  allowEIO3: true,
+  cors: { origin: "*" },
+  allowEIO3: true
 });
+
 
 app.use(express.json());
 app.use(cors());

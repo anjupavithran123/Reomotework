@@ -8,7 +8,7 @@ const io = new Server(server, {
   cors: { origin: '*' }
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4005;
 
 
 io.on('connection', (socket) => {

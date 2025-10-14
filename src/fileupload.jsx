@@ -4,7 +4,7 @@ import axios from 'axios';
 import './uploadfile.css'
 
 // Configuration
-const UPLOAD_URL = import.meta.env.REACT_APP_UPLOAD_URL ='http://localhost:4000/upload';
+const UPLOAD_URL = import.meta.env.REACT_APP_UPLOAD_URL ='http://localhost:4002/upload';
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_TYPES = [
   'image/jpeg', 'image/png', 'image/gif', // images
@@ -180,7 +180,7 @@ export default function FileUploader() {
       </div>
 
       <div className="mt-4 flex gap-2">
-        <button onClick={uploadAll} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Upload all</button>
+        <button onClick={uploadAll} className="px-4 py-2 bg-blue-600 text-black rounded hover:bg-blue-700">Upload all</button>
         <button onClick={clearAll} className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300">Clear</button>
       </div>
 

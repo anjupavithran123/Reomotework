@@ -3,7 +3,7 @@ import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import { io } from 'socket.io-client';
 
-const SERVER_URL = 'http://localhost:4000';
+const SERVER_URL = 'http://localhost:4001';
 
 
 export default function DocumentEditor({ docId = 'default-doc', username = 'Anonymous' }) {
@@ -13,6 +13,7 @@ export default function DocumentEditor({ docId = 'default-doc', username = 'Anon
   const [connectedUsers, setConnectedUsers] = useState([]);
 
   useEffect(() => {
+    
     // initialize Quill editor
     quillRef.current = new Quill(editorRef.current, {
       theme: 'snow',
