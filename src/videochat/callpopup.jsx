@@ -5,16 +5,11 @@ import SimplePeer from 'simple-peer/simplepeer.min.js';
 
 // Polyfill for global (required for simple-peer in modern bundlers)
 if (typeof global === 'undefined') {
-  try {
-    Object.defineProperty(window, 'global', {
-      value: window,
-      writable: true,
-      configurable: true,
-    });
-  } catch (e) {
-    console.warn('Cannot define global on window:', e);
+  if (!window.global) {
+    window.global = window;
   }
 }
+
 
 
 const SIGNALING_SERVER = import.meta.env.REACT_APP_SIGNALING_SERVER || 'http://localhost:4005';
