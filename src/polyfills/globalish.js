@@ -7,8 +7,7 @@ if (typeof globalThis.global === 'undefined') {
         configurable: true,
       });
     } catch (e) {
-      // fallback if defineProperty fails in some environment
-      globalThis.global = globalThis;
+      globalThis.global = globalThis; // fallback if defineProperty fails
     }
   }
   

@@ -4,17 +4,17 @@ import { io } from 'socket.io-client';
 import SimplePeer from 'simple-peer/simplepeer.min.js';
 
 // Polyfill for global (required for simple-peer in modern bundlers)
-try {
-  if (typeof global === 'undefined') {
-    Object.defineProperty(window, 'global', {
-      value: window,
-      writable: true,
-      configurable: true,
-    });
-  }
-} catch (e) {
-  console.warn('Could not define window.global', e);
-}
+// try {
+//   if (typeof global === 'undefined') {
+//     Object.defineProperty(window, 'global', {
+//       value: window,
+//       writable: true,
+//       configurable: true,
+//     });
+//   }
+// } catch (e) {
+//   console.warn('Could not define window.global', e);
+// }
 
 
 
