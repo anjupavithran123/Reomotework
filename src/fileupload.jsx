@@ -4,7 +4,7 @@ import axios from 'axios';
 import './uploadfile.css'
 
 // Configuration
-const UPLOAD_URL = import.meta.env.REACT_APP_UPLOAD_URL ='http://localhost:4002/upload';
+const UPLOAD_URL = import.meta.env.REACT_APP_UPLOAD_URL || 'http://localhost:4002/upload';
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
 const ALLOWED_TYPES = [
   'image/jpeg', 'image/png', 'image/gif', // images
