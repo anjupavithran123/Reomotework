@@ -1,3 +1,5 @@
+
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import ReactQuill from 'react-quill-new';
@@ -10,3 +12,4 @@ createRoot(document.getElementById('root')).render(
     <App />
   </StrictMode>,
 )
+
