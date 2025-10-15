@@ -6,9 +6,13 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [tailwindcss(),react()],
-  // define: {
-  //   global: 'globalThis',
-  // },
+  define: {
+    // replace global references at build-time with globalThis
+    global: 'globalThis',
+  },
+  build: {
+    sourcemap: true,
+  },
   base:"/Reomotework"
 })
 

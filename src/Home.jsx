@@ -168,7 +168,7 @@ function Home() {
               <li><a href="/fileupload">Fileupload</a></li>
               <li><a href="/whiteboard">White-Board</a></li>
               <li><a href="/email">Invite email</a></li>
-              {/* <li><a href="/videocall">Video-Chat</a></li> */}
+              <li><a href="/videocall">Video-Chat</a></li>
             </ul>
 
             <div className="icon" onClick={toggleMenu}><FaBars /></div>
