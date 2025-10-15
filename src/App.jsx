@@ -27,19 +27,19 @@ function App() {
  <BrowserRouter basename="/Reomotework">
     <Routes>
     <Route path='/' element={<Signup/>}></Route>
-    <Route path='/Reomotework/login' element={<Login/>}></Route>
-    <Route path='/Reomotework/home' element={<Home/>}></Route>
-    <Route path='/Reomotework/chatbox' element={<Chatlogin/>}></Route>
-    <Route path='/Reomotework/chatcontainer' element={<Chatcontainer/>}></Route>
-    <Route path='/Reomotework/fileupload' element={<FileUploader/>}></Route> 
-    <Route path='/Reomotework/profilepic' element={<ProfilepicUpload/>}></Route>
-    <Route path='/Reomotework/whiteboard' element={<CollaborativeWhiteboard/>}></Route>
-    <Route path='/Reomotework/members' element={<Members/>}></Route>
-    <Route path='/Reomotework/document' element={<DocumentEditor/>}></Route>
-    <Route path='/Reomotework/taskboard' element={<Taskboard/>}></Route>
-    <Route path='/Reomotework/email' element={<InviteForm/>}></Route>
+    <Route path='/login' element={<Login/>}></Route>
+    <Route path='/home' element={<Home/>}></Route>
+    <Route path='//chatbox' element={<Chatlogin/>}></Route>
+    <Route path='/chatcontainer' element={<Chatcontainer/>}></Route>
+    <Route path='/fileupload' element={<FileUploader/>}></Route> 
+    <Route path='/profilepic' element={<ProfilepicUpload/>}></Route>
+    <Route path='/whiteboard' element={<CollaborativeWhiteboard/>}></Route>
+    <Route path='/members' element={<Members/>}></Route>
+    <Route path='/document' element={<DocumentEditor/>}></Route>
+    <Route path='/taskboard' element={<Taskboard/>}></Route>
+    <Route path='/email' element={<InviteForm/>}></Route>
 
-    <Route path='/Reomotework/videocall' element={<VideoCall/>}></Route>
+    <Route path='/videocall' element={<VideoCall/>}></Route>
 
 
     </Routes>

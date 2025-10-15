@@ -142,33 +142,33 @@ function Home() {
             </div>
 
             <ul className={isOpen ? "nav-link active" : "nave-link"}>
-              <li><a href="/Reomotework/members">Members</a></li>
+              <li><a href="/members">Members</a></li>
 
               <li>
-                <a href="/Reomotework/chatcontainer" onClick={handleChatClick} className="docs-link">
+                <a href="/chatcontainer" onClick={handleChatClick} className="docs-link">
                   ChatBox
                   {chatNotifications > 0 && <span className="badge">{chatNotifications}</span>}
                 </a>
               </li>
 
               <li>
-                <a href="/Reomotework/document" onClick={handleDocsClick} className="docs-link">
+                <a href="/document" onClick={handleDocsClick} className="docs-link">
                   Docs Editor
                   {docsBadgeCount > 0 && <span className="badge">{docsBadgeCount}</span>}
                 </a>
               </li>
 
               <li>
-                <a href="/Reomotework/taskboard" onClick={handleTaskboardClick} className="docs-link">
+                <a href="/taskboard" onClick={handleTaskboardClick} className="docs-link">
                   Taskboard
                   {taskboardBadgeCount > 0 && <span className="badge">{taskboardBadgeCount}</span>}
                 </a>
               </li>
 
-              <li><a href="/Reomotework/fileupload">Fileupload</a></li>
-              <li><a href="/Reomotework/whiteboard">White-Board</a></li>
-              <li><a href="/Reomotework/email">Invite email</a></li>
-              <li><a href="/Reomotework/videocall">Video-Chat</a></li>
+              <li><a href="/fileupload">Fileupload</a></li>
+              <li><a href="/whiteboard">White-Board</a></li>
+              <li><a href="/email">Invite email</a></li>
+              <li><a href="/videocall">Video-Chat</a></li>
             </ul>
 
             <div className="icon" onClick={toggleMenu}><FaBars /></div>
