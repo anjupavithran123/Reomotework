@@ -4,9 +4,10 @@ import { io } from 'socket.io-client';
 import SimplePeer from 'simple-peer/simplepeer.min.js';
 
 // Polyfill for global (required for simple-peer in modern bundlers)
-if (typeof global === 'undefined') {
+if (typeof globalThis.global === 'undefined') {
   window.global = window;
 }
+
 
 const SIGNALING_SERVER = import.meta.env.REACT_APP_SIGNALING_SERVER || 'http://localhost:4005';
 

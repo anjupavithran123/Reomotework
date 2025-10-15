@@ -24,9 +24,9 @@ function App() {
    return(
 
     <div className="App">
-    <BrowserRouter>
+ <BrowserRouter basename="/Reomotework">
     <Routes>
-    <Route path='/register' element={<Signup/>}></Route>
+    <Route path='/' element={<Signup/>}></Route>
     <Route path='/login' element={<Login/>}></Route>
     <Route path='/home' element={<Home/>}></Route>
     <Route path='/chatbox' element={<Chatlogin/>}></Route>
