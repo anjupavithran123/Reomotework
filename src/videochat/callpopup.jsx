@@ -4,7 +4,11 @@ import { io } from 'socket.io-client';
 import SimplePeer from 'simple-peer/simplepeer.min.js';
 
 // Polyfill for global (required for simple-peer in modern bundlers)
-
+// if (typeof global === 'undefined') {
+//   if (!window.global) {
+//     window.global = window;
+//   }
+// }
 
 
 

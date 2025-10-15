@@ -15,7 +15,7 @@ import CollaborativeWhiteboard from './whiteboard.jsx'
 import DocumentEditor from './document/DocumentEditor.jsx'
 import Taskboard from './taskbord/taskboard.jsx'
 import  InviteForm from './emailinvite.jsx'
-import VideoCall from "./videochat/videocall.jsx";
+// import VideoCall from "./videochat/videocall.jsx";
 
 function App() {
 
@@ -39,7 +39,7 @@ function App() {
     <Route path='/taskboard' element={<Taskboard/>}></Route>
     <Route path='/email' element={<InviteForm/>}></Route>
 
-    <Route path='/videocall' element={<VideoCall/>}></Route>
+    {/* <Route path='/videocall' element={<VideoCall/>}></Route> */}
 
 
     </Routes>
