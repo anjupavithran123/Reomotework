@@ -1,6 +1,7 @@
 {
-   "homepage": "https://github.com/anjupavithran123/Reomotework",
+   
    "name": "remortework",
+   "homepage": "https://anjupavithran123.github.io/Reomotework/",
    "private": true,
    "version": "0.0.0",
    "type": "module",
@@ -8,7 +9,7 @@
       "dev": "vite",
       "build": "vite build",
       "predeploy": "npm run build",
-      "deploy": "gh-pages -d build",
+      "deploy": "gh-pages -d dist",
       "lint": "eslint .",
       "preview": "vite preview"
    },
