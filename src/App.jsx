@@ -2,7 +2,7 @@ import { useState } from "react";
 
 
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Signup from './signup.jsx'
+import Signup from "./main.jsx";
 import { BrowserRouter,Routes,Route } from 'react-router-dom'
 import Login from './login.jsx'
 import Home from './Home.jsx'
