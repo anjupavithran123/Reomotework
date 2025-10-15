@@ -10,7 +10,9 @@ export default defineConfig({
     // replace global references at build-time with globalThis
     global: 'globalThis',
   },
-  
+  build: {
+    sourcemap: true,
+  },
   base:"/Reomotework"
 })
 
