@@ -143,12 +143,12 @@ function Home() {
             </div>
 
             <ul className={isOpen ? "nav-link active" : "nave-link"}>
-              <li><Link to="/members">Members</Link></li>
-
-              <li><Link to="/chatcontainer" onClick={handleChatClick}>ChatBox</Link>
+            <li><Link to="members">Members</Link></li>
+              <li>
+                <a href="/#/chatcontainer" onClick={handleChatClick} className="docs-link">
                   ChatBox
                   {chatNotifications > 0 && <span className="badge">{chatNotifications}</span>}
-               
+                </a>
               </li>
 
               <li>
