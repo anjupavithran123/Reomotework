@@ -6,12 +6,11 @@ import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css'
 import './index.css'
 import './polyfills/globalish';
-
+import { HashRouter } from 'react-router-dom';
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  <HashRouter>
     <App />
-  </StrictMode>,
-)
-
+  </HashRouter>
+);

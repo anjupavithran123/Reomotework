@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import 'bootstrap/dist/css/bootstrap.min.css'
 import Signup from "./signup.jsx";
-import { BrowserRouter,Routes,Route } from 'react-router-dom'
+import { HashRouter,Routes,Route } from 'react-router-dom'
 import Login from './login.jsx'
 import Home from './Home.jsx'
 import Chatlogin from './chatlogin.jsx'
@@ -24,7 +24,7 @@ function App() {
    return(
 
     <div className="App">
- <BrowserRouter basename="/Reomotework">
+
     <Routes>
     <Route path='/' element={<Signup/>}></Route>
     <Route path='/login' element={<Login/>}></Route>
@@ -43,7 +43,7 @@ function App() {
 
 
     </Routes>
-    </BrowserRouter>
+ 
     
     </div>
   )
