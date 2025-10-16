@@ -142,7 +142,7 @@ function Home() {
             </div>
 
             <ul className={isOpen ? "nav-link active" : "nave-link"}>
-              <li><a href="/members">Members</a></li>
+              <li><a href="/#/members">Members</a></li>
 
               <li>
                 <a href="/chatcontainer" onClick={handleChatClick} className="docs-link">
