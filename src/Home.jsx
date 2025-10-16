@@ -165,10 +165,10 @@ function Home() {
                   </Link>
               </li>
 
-                  <li><Link to="fileupload">Fileupload</Link></li>
-                  <li><Link to="whiteboard">White-Board</Link></li>
-                  <li><Link to="email">Invite email</Link></li>
-                  <li><Link to="videocall">Video-Chat</Link></li>
+                  <li><Link to="/fileupload">Fileupload</Link></li>/
+                  <li><Link to="/whiteboard">White-Board</Link></li>
+                  <li><Link to="/email">Invite email</Link></li>
+                  <li><Link to="/videocall">Video-Chat</Link></li>
             </ul>
 
             <div className="icon" onClick={toggleMenu}><FaBars /></div>
