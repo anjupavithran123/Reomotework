@@ -10,11 +10,7 @@ import { HashRouter } from 'react-router-dom';
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
-<<<<<<< HEAD
-  <HashRouter basename="/">
-=======
   <HashRouter  basename="/Reomotework">
->>>>>>> 2141d1f (g)
     <App />
   </HashRouter>
 );
