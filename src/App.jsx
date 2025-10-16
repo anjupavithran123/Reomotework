@@ -28,7 +28,7 @@ function App() {
     <Routes>
     <Route path='/' element={<Signup/>}></Route>
     <Route path='/login' element={<Login/>}></Route>
-    <Route path='/home' element={<Home/>}></Route>
+    <Route path='/Reomotework/home' element={<Home/>}></Route>
     <Route path='//chatbox' element={<Chatlogin/>}></Route>
     <Route path='/chatcontainer' element={<Chatcontainer/>}></Route>
     <Route path='/fileupload' element={<FileUploader/>}></Route> 
