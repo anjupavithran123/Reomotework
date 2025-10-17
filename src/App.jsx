@@ -2,8 +2,8 @@ import { useState } from "react";
 
 
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Signup from "./signup.jsx";
-import { HashRouter,Routes,Route } from 'react-router-dom'
+import Signup from './signup.jsx'
+import { BrowserRouter,Routes,Route } from 'react-router-dom'
 import Login from './login.jsx'
 import Home from './Home.jsx'
 import Chatlogin from './chatlogin.jsx'
@@ -24,9 +24,9 @@ function App() {
    return(
 
     <div className="App">
-
+    <BrowserRouter>
     <Routes>
-    <Route path='/' element={<Signup/>}></Route>
+    <Route path='/register' element={<Signup/>}></Route>
     <Route path='/login' element={<Login/>}></Route>
     <Route path='/home' element={<Home/>}></Route>
     <Route path='/chatbox' element={<Chatlogin/>}></Route>
@@ -43,7 +43,7 @@ function App() {
 
 
     </Routes>
- 
+    </BrowserRouter>
     
     </div>
   )
