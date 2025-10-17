@@ -10,7 +10,11 @@ import { HashRouter } from 'react-router-dom';
 import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
+<<<<<<< HEAD
   <HashRouter >
+=======
+  <HashRouter   >
+>>>>>>> 91a4876c2e4d7e3383c1e79c5e2fce565914b38e
     <App />
   </HashRouter>
 );

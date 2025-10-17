@@ -41,7 +41,7 @@ export default function Members() {
   const fetchMembers = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await axios.get("http://localhost:3001/members");
+      const res = await axios.get("https://remotework-signup-server.onrender.com/members");
       setMembers(res.data || []);
     } catch (err) {
       console.error("Failed to load members", err);
