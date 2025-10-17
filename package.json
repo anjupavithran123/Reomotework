@@ -168,6 +168,9 @@
    "vite": "^7.1.6"
    
    },
+    "engines": {
+  "node":  "23.x"
+},
    
    "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
    
