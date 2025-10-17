@@ -6,6 +6,7 @@ import ProfilepicUpload from "./profilepic";
 import { io } from "socket.io-client";
 import { Link } from "react-router-dom";
 
+
 const SERVER_URL = "http://localhost:4001"; // for doc/taskboard
 const CHAT_SERVER_URL = "http://localhost:3002"; // new
 const WATCH_DOC_ID = "default-doc";
@@ -145,30 +146,31 @@ function Home() {
             <ul className={isOpen ? "nav-link active" : "nave-link"}>
               <li><Link to="/members">Members</Link></li>
 
-              <li><Link to="/chatcontainer" onClick={handleChatClick}>ChatBox</Link>
+              <li>
+                <Link to="/chatcontainer" onClick={handleChatClick} className="docs-link">
                   ChatBox
                   {chatNotifications > 0 && <span className="badge">{chatNotifications}</span>}
-               
+                </Link>
               </li>
 
               <li>
-                <a href="/#/document" onClick={handleDocsClick} className="docs-link">
+               <Link to="/document" onClick={handleDocsClick} className="docs-link">
                   Docs Editor
                   {docsBadgeCount > 0 && <span className="badge">{docsBadgeCount}</span>}
-                </a>
+                </Link>
               </li>
 
               <li>
-                <a href="/#/taskboard" onClick={handleTaskboardClick} className="docs-link">
+               <Link to="/taskboard" onClick={handleTaskboardClick} className="docs-link">
                   Taskboard
                   {taskboardBadgeCount > 0 && <span className="badge">{taskboardBadgeCount}</span>}
-                </a>
+                </Link>
               </li>
 
-              <li><a href="/#/fileupload">Fileupload</a></li>
-              <li><a href="/#/whiteboard">White-Board</a></li>
-              <li><a href="/#/email">Invite email</a></li>
-              <li><a href="/#/videocall">Video-Chat</a></li>
+              <li><Link to="/fileupload">Fileupload</Link></li>
+              <li><Link to="/whiteboard">White-Board</Link></li>
+              <li><Link to="/email">Invite email</Link></li>
+              <li><Link to="/videocall">Video-Chat</Link></li>
             </ul>
 
             <div className="icon" onClick={toggleMenu}><FaBars /></div>
