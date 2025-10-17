@@ -13,7 +13,7 @@ const server = http.createServer(app);
 // Socket.IO attached to the same HTTP server
 const io = new Server(server, {
   cors: {
-    // In production restrict to your frontend origin e.g. "https://<your-username>.github.io"
+    // In production restrict to your frontend origin e.g. "https://<your-username>.github
     origin: process.env.ALLOWED_ORIGIN || "*",
     methods: ["GET", "POST"],
   },
