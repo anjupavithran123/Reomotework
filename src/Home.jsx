@@ -147,10 +147,17 @@ function Home() {
               <li><Link to="/members">Members</Link></li>
 
               <li>
+<<<<<<< HEAD
                 <Link to="/chatcontainer" onClick={handleChatClick} className="docs-link">
                   ChatBox
                   {chatNotifications > 0 && <span className="badge">{chatNotifications}</span>}
                 </Link>
+=======
+                <a href="/#/chatcontainer" onClick={handleChatClick} className="docs-link">
+                  ChatBox
+                  {chatNotifications > 0 && <span className="badge">{chatNotifications}</span>}
+                </a>
+>>>>>>> origin/master
               </li>
 
               <li>
