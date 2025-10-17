@@ -9,22 +9,38 @@ const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
+
+// Socket.IO attached to the same HTTP server
 const io = new Server(server, {
-  cors: { origin: "*" },
-  allowEIO3: true
+  cors: {
+    // In production restrict to your frontend origin e.g. "https://<your-username>.github.io"
+    origin: process.env.ALLOWED_ORIGIN || "*",
+    methods: ["GET", "POST"],
+  },
+  allowEIO3: true,
 });
 
-
 app.use(express.json());
-app.use(cors());
-const PORT = process.env.PORT || 3001;
-// MongoDB connection (ensure URL is correct)
-mongoose.connect(
-  "mongodb+srv://anjupavithranm95_db_user:1234@cluster0.xyiidkl.mongodb.net/employee",
-  { useNewUrlParser: true, useUnifiedTopology: true }
-).then(()=>console.log("Mongo connected")).catch(e=>console.error("Mongo error", e));
 
-// onlineUsers: { userId: Set(socketId) }
+// In production, set ALLOWED_ORIGIN to your GitHub Pages URL: https://<username>.github.io
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGIN || "*",
+}));
+
+const PORT = process.env.PORT || 3001;
+
+// MongoDB connection
+const MONGO_URL = process.env.MONGO_URL ||
+  "mongodb+srv://anjupavithranm95_db_user:1234@cluster0.xyiidkl.mongodb.net/employee";
+
+mongoose.connect(MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log("Mongo connected"))
+  .catch(e => console.error("Mongo error", e));
+
+// onlineUsers: Map<userId, Set<socketId>>
 const onlineUsers = new Map();
 
 function addOnline(userId, socketId) {
@@ -67,7 +83,7 @@ io.on("connection", (socket) => {
   });
 });
 
-// Global process watchers (put near top-level)
+// Global process watchers (place near top-level)
 process.on("uncaughtException", (err) => {
   console.error("UNCHECKED EXCEPTION", err && err.stack ? err.stack : err);
 });
@@ -75,18 +91,29 @@ process.on("unhandledRejection", (reason) => {
   console.error("UNHANDLED REJECTION", reason);
 });
 
-
 // Register
 app.post("/register", async (req, res) => {
   try {
-    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const { name, email, password } = req.body;
+    if (!name || !email || !password) return res.status(400).json({ error: "All fields required" });
+
+    // Normalize email
+    const normalizedEmail = email.trim().toLowerCase();
+    const exists = await EmployeeModel.findOne({ email: normalizedEmail }).lean();
+    if (exists) return res.status(409).json({ error: "Email already registered" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
     const employee = await EmployeeModel.create({
-      ...req.body,
+      name,
+      email: normalizedEmail,
       password: hashedPassword,
     });
-    res.json(employee);
+    // Avoid returning password
+    const { password: _p, ...safe } = employee.toObject ? employee.toObject() : employee;
+    res.json(safe);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Register error:", err);
+    res.status(500).json({ error: err.message || "Server error" });
   }
 });
 
@@ -117,18 +144,21 @@ app.post("/login", async (req, res) => {
       user: { id: user._id, name: user.name, email: user.email },
     });
   } catch (err) {
+    console.error("Login error:", err);
     res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
-// Get all members (include email and _id)
+// Get all members
 app.get("/members", async (req, res) => {
   try {
     const members = await EmployeeModel.find({}, { name: 1, email: 1 }).lean();
     res.json(members);
   } catch (err) {
+    console.error("Members error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-app.listen(PORT, () => console.log(`Invite server running on ${PORT}`));
+// Start the server using server.listen so Socket.IO works
+server.listen(PORT, () => console.log(`Invite server running on ${PORT}`));
