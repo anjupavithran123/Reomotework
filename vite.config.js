@@ -13,6 +13,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
   },
-  base:"/Reomotework/"
+  base: process.env.NODE_ENV === 'production' ? '/Reomotework/' : '/'
+})
 })
 
