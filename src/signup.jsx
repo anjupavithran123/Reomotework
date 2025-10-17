@@ -16,7 +16,7 @@ function Signup(){
     
     const handleSubmit=(e)=>{
         e.preventDefault()
-        axios.post('https://signup-server-ony0.onrender.com',{name,email,password})
+        axios.post('https://remotework-signup-server.onrender.com/register',{name,email,password})
         .then(result=>{console.log(result)
           navigate('/login')
      } )
