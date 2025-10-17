@@ -16,7 +16,7 @@ function Signup(){
     
     const handleSubmit=(e)=>{
         e.preventDefault()
-        axios.post('${SERVER_URL}/register',{name,email,password})
+        axios.post('${SERVER_URL}/api/data',{name,email,password})
         .then(result=>{console.log(result)
           navigate('/login')
      } )
