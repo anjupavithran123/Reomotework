@@ -9,7 +9,7 @@ function Signup() {
   const navigate = useNavigate();
 
   // Use environment variable for backend URL
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL || "https://signup-server-ony0.onrender.com";
+  const SERVER_URL = import.meta.env.VITE_SERVER_URL || "https://re-signup-server.onrender.com";
 
   const handleSubmit = async (e) => {
     e.preventDefault();
