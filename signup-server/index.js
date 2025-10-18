@@ -17,7 +17,7 @@ const io = new Server(server, {
 
 app.use(express.json());
 app.use(cors());
-const PORT = process.env.PORT || 3001;
+
 // MongoDB connection (ensure URL is correct)
 mongoose.connect(
   "mongodb+srv://anjupavithranm95_db_user:1234@cluster0.xyiidkl.mongodb.net/employee",
@@ -131,4 +131,4 @@ app.get("/members", async (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Invite server running on ${PORT}`));
+server.listen(3001, () => console.log("Server running on port 3001"));
