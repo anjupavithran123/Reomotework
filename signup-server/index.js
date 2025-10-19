@@ -193,8 +193,6 @@ app.get('/members', async (req, res) => {
 app.get('/', (req, res) => {
   res.send('🚀 Signup backend is running!');
 });
-// health check
-app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 // Start server
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

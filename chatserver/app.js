@@ -1,3 +1,5 @@
+
+require('dotenv').config();
 const express = require('express')
 const http = require('http')
 const Server = require('socket.io').Server
@@ -15,6 +17,7 @@ const io = new Server(server, {
         origin: "*"
     }
 })
+const PORT = process.env.PORT || 3002;
 
 io.on("connection", (socket) => {
     console.log("connected");
@@ -44,6 +47,11 @@ io.on("connection", (socket) => {
     })
 })
 
-server.listen("3002", () => {
-    console.log("running on 3002 port")
-})
+app.get('/', (req, res) => {
+    res.send('🚀 Signup backend is running!');
+  });
+  
+  // Start server
+  server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  
+  
