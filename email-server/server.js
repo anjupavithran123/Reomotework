@@ -108,5 +108,5 @@ app.get('/', (req, res) => {
 });
 
 // Start server
-server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
 
