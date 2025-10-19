@@ -1,6 +1,7 @@
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:3001", {
+
+export const socket = io("https://signup-server-1.onrender.com", {
   transports: ["websocket"],
   autoConnect: false, // connect manually
 });
