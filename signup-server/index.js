@@ -23,7 +23,15 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cors());
 
+<<<<<<< HEAD
 const PORT = process.env.PORT || 3001;
+=======
+// MongoDB connection (ensure URL is correct)
+mongoose.connect(
+  "mongodb+srv://anjupavithranm95_db_user:1234@cluster0.xyiidkl.mongodb.net/employee",
+  { useNewUrlParser: true, useUnifiedTopology: true }
+).then(()=>console.log("Mongo connected")).catch(e=>console.error("Mongo error", e));
+>>>>>>> 4b573992cd327faae200a348cfe45cde18d5b6de
 
 // quick debug: print whether env var exists
 console.log('MONGO_URI length:', (process.env.MONGO_URI || '').length);
@@ -182,8 +190,12 @@ app.get('/members', async (req, res) => {
   }
 });
 
+<<<<<<< HEAD
 // health check
 app.get('/health', (req, res) => res.json({ status: 'ok', time: new Date().toISOString() }));
 
 // Start server
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+=======
+server.listen(3001, () => console.log("Server running on port 3001"));
+>>>>>>> 4b573992cd327faae200a348cfe45cde18d5b6de
