@@ -16,7 +16,7 @@ dotenv.config();
 const app = express();                 // 1️⃣ Initialize Express app
 const server = http.createServer(app); // 2️⃣ Create HTTP server
 
-app.use(cors({ origin: "http://localhost:5173" })); // allow react dev server
+app.use(cors({ origin: "https://anjupavithran123.github.io/Reomotework/" })); // allow react dev server
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 4003;

@@ -9,9 +9,8 @@ const Delta = require('quill-delta'); // npm i quill-delta
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: '*' },
 });
-
+cors({ origin: "https://anjupavithran123.github.io/Reomotework/" })
 const PORT = process.env.PORT || 4001;
 
 // In-memory document store: { [docId]: Delta }
