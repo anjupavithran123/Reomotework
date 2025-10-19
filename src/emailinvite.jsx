@@ -9,7 +9,7 @@ export default function InviteForm({ workspaceId = "default-workspace", inviterN
     setStatus({ loading: true });
 
     try {
-      const resp = await fetch("https://email-server-gpmy.onrender.com/api/invite", {
+      const resp = await fetch("http://localhost:4003/api/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, workspaceId, inviterName }),
