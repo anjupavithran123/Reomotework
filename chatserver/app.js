@@ -5,7 +5,7 @@ const http = require('http')
 const Server = require('socket.io').Server
 const Connection = require('./db.js')
 const mongoose = require("mongoose")
-const Chat = require('./models/Chat.js')
+const Chat = require('./models/chat.js')
 const { timeStamp } = require('console')
 
 const app = express()
