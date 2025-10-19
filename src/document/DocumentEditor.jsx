@@ -3,7 +3,7 @@ import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import { io } from 'socket.io-client';
 
-const SERVER_URL = 'https://document-server-osvl.onrender.com';
+const SERVER_URL = 'https://document-server1.onrender.com';
 
 
 export default function DocumentEditor({ docId = 'default-doc', username = 'Anonymous' }) {
