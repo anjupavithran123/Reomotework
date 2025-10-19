@@ -1,5 +1,6 @@
 // src/pages/Signup.jsx
 import React, { useState } from 'react';
+import { API_BASE } from './config';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
@@ -11,7 +12,6 @@ function Signup() {
   const navigate = useNavigate();
 
   // Use env variable if provided, else fallback to localhost
-  const API_BASE = import.meta.env.REACT_APP_API_URL || 'https://signup-server-1.onrender.com';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
