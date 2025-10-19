@@ -17,7 +17,7 @@ export default function Login() {
     console.log("Submitting login:", { email, password: password ? "••••" : "" });
 
     try {
-      const resp = await axios.post("http://localhost:3001/login", { email, password }, {
+      const resp = await axios.post("https://signup-server-1.onrender.com/login", { email, password }, {
         headers: { "Content-Type": "application/json" }
       });
 
