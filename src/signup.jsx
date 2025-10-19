@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-<<<<<<< HEAD
 function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -79,7 +78,7 @@ function Signup() {
 }
 
 export default Signup;
-=======
+
 function signup(){
 
 const[name , setName]=useState()
@@ -161,5 +160,5 @@ const handleSubmit=(e)=>{
   
 );
 }
-export default signup;
->>>>>>> 4b573992cd327faae200a348cfe45cde18d5b6de
+
+
