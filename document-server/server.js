@@ -1,4 +1,6 @@
 // server/server.js
+require('dotenv').config();
+
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
@@ -85,5 +87,10 @@ try {
   });
 });
 
-app.get('/', (req, res) => res.send('Realtime doc server is running'));
-server.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
+app.get('/', (req, res) => {
+  res.send('🚀 Signup backend is running!');
+});
+
+// Start server
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+

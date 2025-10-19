@@ -1,20 +1,27 @@
 // server/index.js
+
+
+
 import express from "express";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import cors from "cors";
 import bodyParser from "body-parser";
+import http from 'http';
+
 
 dotenv.config();
 
-const app = express();
+const app = express();                 // 1️⃣ Initialize Express app
+const server = http.createServer(app); // 2️⃣ Create HTTP server
+
 app.use(cors({ origin: "http://localhost:5173" })); // allow react dev server
 app.use(bodyParser.json());
 
 const PORT = process.env.PORT || 4003;
 const JWT_SECRET = process.env.JWT_SECRET || "replace_with_strong_secret";
-const FRONTEND_REGISTER_URL = process.env.FRONTEND_REGISTER_URL || "http://localhost:5173/register";
+const FRONTEND_REGISTER_URL = process.env.FRONTEND_REGISTER_URL || "https://anjupavithran123.github.io/Reomotework/";
 const INVITE_EXPIRATION_SECONDS = 60 * 60 * 24 * 3; // invite valid for 3 days
 
 // configure nodemailer transporter
@@ -96,4 +103,10 @@ app.post("/api/verify-invite", (req, res) => {
   }
 });
 
-app.listen(PORT, () => console.log(`Invite server running on ${PORT}`));
+app.get('/', (req, res) => {
+  res.send('🚀 Signup backend is running!');
+});
+
+// Start server
+server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
