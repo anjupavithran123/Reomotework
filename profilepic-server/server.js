@@ -1,9 +1,14 @@
-const express = require("express");
-const multer = require("multer");
-const cors = require("cors");
+import dotenv from 'dotenv';
+dotenv.config();
+
+import express from 'express';
+import multer from 'multer';
+import cors from 'cors';
 const app = express();
 
 app.use(cors());
+app.use(express.json()); 
+const PORT = process.env.PORT ||4000;
 
 // Storage configuration
 const storage = multer.diskStorage({
@@ -22,4 +27,9 @@ app.post("/upload", upload.single("profile"), (req, res) => {
   res.json({ message: "File uploaded successfully", filename: req.file.filename });
 });
 
-app.listen(4000, () => console.log("Server running on port 4000"));
+app.get('/', (req, res) => {
+  res.send('🚀 Profile pic server is running!');
+});
+
+// Start server
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));

@@ -1,16 +1,19 @@
 // server/server.js
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
 
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const Delta = require('quill-delta'); // npm i quill-delta
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import { Server } from 'socket.io';
+import Delta from 'quill-delta'; // npm i quill-delta
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
 });
 cors({ origin: "https://anjupavithran123.github.io/Reomotework/" })
+
 const PORT = process.env.PORT || 4001;
 
 // In-memory document store: { [docId]: Delta }
