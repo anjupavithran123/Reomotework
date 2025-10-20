@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { EMAIL_URL } from "./config";
 
 export default function InviteForm({ workspaceId = "default-workspace", inviterName = "Admin" }) {
   const [email, setEmail] = useState("");
@@ -10,8 +9,7 @@ export default function InviteForm({ workspaceId = "default-workspace", inviterN
     setStatus({ loading: true });
 
     try {
-      const resp = await fetch(`${EMAIL_URL}/api/invite`, 
-        {
+      const resp = await fetch("https://email-server1-bh4o.onrender.com/api/invite", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, workspaceId, inviterName }),
