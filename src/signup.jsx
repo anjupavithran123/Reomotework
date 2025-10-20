@@ -11,7 +11,7 @@ function Signup() {
   const navigate = useNavigate();
 
   // Use env variable if provided, else fallback to localhost
-  const API_BASE = import.meta.env.REACT_APP_API_URL || 'https://signup-server-1.onrender.com';
+  const API_BASE = import.meta.env.REACT_APP_API_URL || 'https://sigup-server3.onrender.com';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
