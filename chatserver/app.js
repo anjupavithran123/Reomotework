@@ -17,7 +17,7 @@ const io = new Server(server, {
         origin: "*"
     }
 })
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3001;
 
 io.on("connection", (socket) => {
     console.log("connected");
